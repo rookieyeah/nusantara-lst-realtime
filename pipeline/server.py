@@ -1,11 +1,12 @@
-"""Server HTTP lokal untuk evaluasi web + endpoint pengambilan frame Himawari sesuai tanggal/jam pilihan."""
+"""Server HTTP untuk aplikasi web Nusantara LST + endpoint on-demand /api/fetch_frame dari AWS Himawari-9."""
 
 from __future__ import annotations
 
 import json
 import logging
+import os
 import sys
-from datetime import datetime, timezone
+from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
@@ -22,15 +23,33 @@ class LSTRequestHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.end_headers()
+
     def do_GET(self):
         parsed = urlparse(self.path)
+        if parsed.path == "/api/health":
+            body = json.dumps({"ok": True, "service": "nusantara-lst-api"}).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+
         if parsed.path == "/api/fetch_frame":
             qs = parse_qs(parsed.query)
             region = (qs.get("region") or ["indonesia"])[0]
             time_str = (qs.get("time") or [""])[0]
             try:
                 log.info("Permintaan on-demand dari Web: region=%s time=%s", region, time_str)
-                # Proses untuk kedua wilayah; simpan raw saat wilayah pertama agar wilayah kedua tidak mengunduh ulang
                 meta = run_himawari(region=region, at=time_str if time_str else None, out_dir=DATA_DIR, keep_raw=True)
                 other = "kalimantan" if region == "indonesia" else "indonesia"
                 try:
@@ -65,10 +84,12 @@ class LSTRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
 
-def main(port: int = 8080) -> None:
+def main(port: int | None = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", stream=sys.stdout)
-    srv = ThreadingHTTPServer(("127.0.0.1", port), LSTRequestHandler)
-    log.info("Server Nusantara LST berjalan di http://localhost:%d/web/", port)
+    bind_port = port or int(os.environ.get("PORT", "8080"))
+    bind_host = os.environ.get("HOST", "0.0.0.0")
+    srv = ThreadingHTTPServer((bind_host, bind_port), LSTRequestHandler)
+    log.info("Server Nusantara LST berjalan di http://%s:%d/web/index.html", bind_host, bind_port)
     srv.serve_forever()
 
 

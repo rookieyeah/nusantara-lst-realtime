@@ -760,8 +760,20 @@ async function renderActiveLayer() {
         return hh >= h0 && hh <= h1;
       });
     }
-    if (!matchingFrames.length) {
-      matchingFrames = [regData.frames[currentFrameIdx]];
+    if (!matchingFrames.length && (regData.frames || []).length) {
+      // Pilih frame dengan jam terdekat ke titik tengah rentang [h0 .. h1]
+      const targetMidMin = ((h0 + h1) / 2) * 60;
+      let bestFrame = regData.frames[currentFrameIdx] || regData.frames[regData.frames.length - 1];
+      let bestDiff = Infinity;
+      for (const f of regData.frames) {
+        const fMin = Number(f.stamp.slice(9, 11)) * 60 + Number(f.stamp.slice(11, 13));
+        const diff = Math.abs(fMin - targetMidMin);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestFrame = f;
+        }
+      }
+      matchingFrames = [bestFrame];
     }
 
     // Jika mode Gabungan Satelit, muat juga COG Fusi Multi-Satelit sebagai pengisi celah & layer Landsat 100m
@@ -1735,7 +1747,7 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
     }
   }
 
-  // Untuk Spesifik 10 Menit atau Rentang Jam yang belum ada satupun citranya di lokal:
+  // Untuk Spesifik 10 Menit atau Rentang Jam yang belum ada satupun citranya di manifest:
   const targetStamp = `${ymd}_${hourVal}${minVal}`;
   const targetParam = `${ymd}${hourVal}${minVal}`;
 
@@ -1748,13 +1760,51 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
     return;
   }
 
-  // Jika belum ada di lokal, panggil endpoint server lokal /api/fetch_frame untuk mengunduh dari AWS Himawari-9
+  // Helper fallback ke frame / komposit terdekat bila berjalan di hosting statis (GitHub Pages / HF Static Space)
+  const fallbackToNearestAvailable = async () => {
+    const frames = regData.frames || [];
+    if (frames.length > 0) {
+      const targetMin = Number(hourVal) * 60 + Number(minVal);
+      let bestIdx = frames.length - 1;
+      let bestDiff = Infinity;
+      frames.forEach((f, idx) => {
+        const fMin = Number(f.stamp.slice(9, 11)) * 60 + Number(f.stamp.slice(11, 13));
+        const diff = Math.abs(fMin - targetMin);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestIdx = idx;
+        }
+      });
+      currentFrameIdx = bestIdx;
+      syncSlider();
+    }
+    await renderActiveLayer();
+    drawTrendChart();
+    const chosen = (regData.frames || [])[currentFrameIdx];
+    if (statusText && chosen) {
+      statusText.textContent = `Aktif · Menampilkan citra terdekat (${formatTimeWib(chosen.time_utc)})`;
+    }
+  };
+
+  const isLocalBackend =
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+  if (!isLocalBackend) {
+    await fallbackToNearestAvailable();
+    return;
+  }
+
+  // Jika berjalan di server Python lokal, panggil /api/fetch_frame untuk mengunduh langsung dari AWS Himawari-9
   const origLabel = btn.textContent;
   btn.disabled = true;
   btn.textContent = "⏳ Mengambil dari Satelit...";
   statusText.textContent = `Mengunduh & memproses Himawari-9 (${dateVal} ${hourVal}:${minVal} UTC)...`;
   try {
     const resp = await fetch(`/api/fetch_frame?region=${currentRegion}&time=${targetParam}`);
+    const contentType = resp.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      await fallbackToNearestAvailable();
+      return;
+    }
     const resJson = await resp.json();
     if (!resp.ok || !resJson.ok) {
       throw new Error(resJson.error || `HTTP ${resp.status}`);
@@ -1767,10 +1817,11 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
       syncSlider();
       await renderActiveLayer();
       drawTrendChart();
+    } else {
+      await fallbackToNearestAvailable();
     }
   } catch (err) {
-    alert(`Gagal mengambil frame ${dateVal} ${hourVal}:${minVal} UTC: ${err.message}`);
-    statusText.textContent = "Gagal mengambil frame baru";
+    await fallbackToNearestAvailable();
   } finally {
     btn.disabled = false;
     btn.textContent = origLabel;

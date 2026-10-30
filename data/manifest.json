@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-30T17:09:58+00:00",
+  "updated_utc": "2026-10-30T17:51:24+00:00",
   "active_region": "indonesia",
   "time_Select_policy": {
     "realtime_10min_max_hours": 48,
@@ -28,7 +28,7 @@
         6.5
       ],
       "res_deg": 0.02,
-      "frame_count": 9,
+      "frame_count": 10,
       "latest": "2026-10-30T14:50:00+00:00",
       "frames": [
         {
@@ -263,6 +263,39 @@
           }
         },
         {
+          "stamp": "20261030_1200",
+          "time_utc": "2026-10-30T12:00:00+00:00",
+          "latency_min": 351.3,
+          "cog_url": "himawari/2026/10/30/LST_H09_20261030_1200_indonesia.tif",
+          "png_url": "himawari/2026/10/30/LST_H09_20261030_1200_indonesia.png",
+          "json_url": "himawari/2026/10/30/LST_H09_20261030_1200_indonesia.json",
+          "stats": {
+            "land_pixels": 468010,
+            "clear_pixels": 143081,
+            "clear_fraction": 0.3057,
+            "cloud_tests_fraction": {
+              "cold": 0.5294,
+              "split_window": 0.2343,
+              "spatial": 0.376,
+              "cloud": 0.6797
+            },
+            "min_c": 14.5,
+            "max_c": 35.26,
+            "mean_c": 25.74,
+            "std_c": 2.99,
+            "p05_c": 19.83,
+            "p50_c": 26.27,
+            "p95_c": 29.73,
+            "hotspot_threshold_c": 31.73,
+            "hotspot_pixels": 861
+          },
+          "sizes_mb": {
+            "raw_download": 36.31,
+            "cog": 0.435,
+            "png": 0.433
+          }
+        },
+        {
           "stamp": "20261030_1430",
           "time_utc": "2026-10-30T14:30:00+00:00",
           "latency_min": 71.3,
@@ -485,6 +518,28 @@
           }
         },
         {
+          "hour_key": "20261030_1200",
+          "time_utc": "2026-10-30T12:00:00+00:00",
+          "frames_merged": 1,
+          "source_stamps": [
+            "20261030_1200"
+          ],
+          "cog_url": "composites/hourly/2026/10/30/LST_HOURLY_20261030_1200_indonesia.tif",
+          "png_url": "composites/hourly/2026/10/30/LST_HOURLY_20261030_1200_indonesia.png",
+          "stats": {
+            "land_pixels": 468010,
+            "clear_pixels": 143081,
+            "clear_fraction": 0.3057,
+            "min_c": 14.5,
+            "max_c": 35.26,
+            "mean_c": 25.74,
+            "std_c": 2.99,
+            "p95_c": 29.73,
+            "hotspot_threshold_c": 31.73,
+            "hotspot_pixels": 855
+          }
+        },
+        {
           "hour_key": "20261030_1400",
           "time_utc": "2026-10-30T14:00:00+00:00",
           "frames_merged": 2,
@@ -590,7 +645,7 @@
         7.5
       ],
       "res_deg": 0.02,
-      "frame_count": 9,
+      "frame_count": 10,
       "latest": "2026-10-30T14:50:00+00:00",
       "frames": [
         {
@@ -825,6 +880,39 @@
           }
         },
         {
+          "stamp": "20261030_1200",
+          "time_utc": "2026-10-30T12:00:00+00:00",
+          "latency_min": 351.3,
+          "cog_url": "himawari/2026/10/30/LST_H09_20261030_1200_kalimantan.tif",
+          "png_url": "himawari/2026/10/30/LST_H09_20261030_1200_kalimantan.png",
+          "json_url": "himawari/2026/10/30/LST_H09_20261030_1200_kalimantan.json",
+          "stats": {
+            "land_pixels": 152335,
+            "clear_pixels": 28869,
+            "clear_fraction": 0.1895,
+            "cloud_tests_fraction": {
+              "cold": 0.6584,
+              "split_window": 0.2438,
+              "spatial": 0.4822,
+              "cloud": 0.799
+            },
+            "min_c": 14.54,
+            "max_c": 35.26,
+            "mean_c": 25.97,
+            "std_c": 2.73,
+            "p05_c": 21.13,
+            "p50_c": 26.31,
+            "p95_c": 29.66,
+            "hotspot_threshold_c": 31.43,
+            "hotspot_pixels": 456
+          },
+          "sizes_mb": {
+            "raw_download": 24.21,
+            "cog": 0.085,
+            "png": 0.088
+          }
+        },
+        {
           "stamp": "20261030_1430",
           "time_utc": "2026-10-30T14:30:00+00:00",
           "latency_min": 71.5,
@@ -1044,6 +1132,28 @@
             "p95_c": 30.47,
             "hotspot_threshold_c": 32.07,
             "hotspot_pixels": 451
+          }
+        },
+        {
+          "hour_key": "20261030_1200",
+          "time_utc": "2026-10-30T12:00:00+00:00",
+          "frames_merged": 1,
+          "source_stamps": [
+            "20261030_1200"
+          ],
+          "cog_url": "composites/hourly/2026/10/30/LST_HOURLY_20261030_1200_kalimantan.tif",
+          "png_url": "composites/hourly/2026/10/30/LST_HOURLY_20261030_1200_kalimantan.png",
+          "stats": {
+            "land_pixels": 152335,
+            "clear_pixels": 28869,
+            "clear_fraction": 0.1895,
+            "min_c": 14.54,
+            "max_c": 35.26,
+            "mean_c": 25.97,
+            "std_c": 2.73,
+            "p95_c": 29.66,
+            "hotspot_threshold_c": 31.43,
+            "hotspot_pixels": 456
           }
         },
         {

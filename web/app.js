@@ -982,6 +982,7 @@ function renderPhase5Tab() {
     tr.addEventListener("click", () => {
       const [x0, y0, x1, y1] = z.bbox;
       map.fitBounds([[y0, x0], [y1, x1]]);
+      autoCloseDrawerOnNarrow();
     });
     zBody.appendChild(tr);
   });
@@ -1010,6 +1011,7 @@ function renderPhase5Tab() {
           )} °C</b> (+${c.anomaly_vs_regional_mean_c}°C vs rata-rata)<br/>Luas Klaster: <b>${c.area_km2} km²</b> (${c.pixels} piksel)`
         )
         .openPopup();
+      autoCloseDrawerOnNarrow();
     });
     cBody.appendChild(tr);
   });
@@ -1048,6 +1050,7 @@ function renderPhase4Tab() {
       document.getElementById("specificSatGroup").style.display = "";
       document.getElementById("layerModeSelect").value = modeVal;
       currentLayerMode = modeVal;
+      autoCloseDrawerOnNarrow();
       await renderActiveLayer();
     });
     uhiContainer.appendChild(card);
@@ -1491,6 +1494,7 @@ document.getElementById("islandJump").addEventListener("change", (e) => {
   if (!e.target.value) return;
   const [lat, lon, z] = e.target.value.split(",").map(Number);
   map.setView([lat, lon], z);
+  if (window.innerWidth <= 960) setTopFiltersCollapsed(true);
 });
 
 document.getElementById("opacityRange").addEventListener("input", (e) => {
@@ -1708,6 +1712,8 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
   const regData = manifest?.regions?.[currentRegion];
   if (!regData) return;
 
+  if (window.innerWidth <= 960) setTimePickerCollapsed(true);
+
   if (tier === "daily_permanent" || tier === "gibs_historical") {
     await renderActiveLayer();
     return;
@@ -1772,20 +1778,101 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
 });
 
 // Toggle Sembunyikan / Tampilkan Sidebar Detail Informasi secara 60fps mulus
-function toggleRightSidebar() {
+function setSidebarCollapsed(collapse) {
   const layout = document.getElementById("mainLayout");
   const topBtn = document.getElementById("toggleSidebarBtn");
   const handleIcon = document.getElementById("mapSidebarHandleIcon");
   const handleLabel = document.getElementById("mapSidebarHandleLabel");
   if (!layout) return;
 
-  const isCollapsed = layout.classList.toggle("sidebar-collapsed");
+  layout.classList.toggle("sidebar-collapsed", collapse);
+  const isMobile = window.innerWidth <= 640;
   if (topBtn) {
-    topBtn.textContent = isCollapsed ? "◫ Tampilkan Panel" : "◫ Sembunyikan Panel";
-    topBtn.classList.toggle("collapsed-state", isCollapsed);
+    if (isMobile) {
+      topBtn.textContent = collapse ? "◫ Panel" : "✕ Panel";
+    } else {
+      topBtn.textContent = collapse ? "◫ Tampilkan Panel" : "◫ Sembunyikan Panel";
+    }
+    topBtn.classList.toggle("collapsed-state", collapse);
   }
-  if (handleIcon) handleIcon.textContent = isCollapsed ? "❮" : "❯";
-  if (handleLabel) handleLabel.textContent = isCollapsed ? "Buka Panel" : "Panel";
+  if (handleIcon) handleIcon.textContent = collapse ? "❮" : "❯";
+  if (handleLabel) handleLabel.textContent = collapse ? "Buka Panel" : "Panel";
+}
+
+function toggleRightSidebar() {
+  const layout = document.getElementById("mainLayout");
+  if (!layout) return;
+  const nextCollapsed = !layout.classList.contains("sidebar-collapsed");
+  setSidebarCollapsed(nextCollapsed);
+}
+
+function autoCloseDrawerOnNarrow() {
+  if (window.innerWidth <= 1120) {
+    setSidebarCollapsed(true);
+  }
+}
+
+function setTopFiltersCollapsed(collapse) {
+  const bar = document.getElementById("mapOverlayTop");
+  const icon = document.getElementById("toggleTopFiltersIcon");
+  if (!bar) return;
+  bar.classList.toggle("filters-collapsed", collapse);
+  if (icon) icon.textContent = collapse ? "▾" : "▴";
+  updateMobileFilterSummary();
+}
+
+function setTimePickerCollapsed(collapse) {
+  const bar = document.getElementById("timeBar");
+  const icon = document.getElementById("toggleTimePickerIcon");
+  if (!bar) return;
+  bar.classList.toggle("timepicker-collapsed", collapse);
+  if (icon) icon.textContent = collapse ? "▾" : "▴";
+}
+
+function updateMobileFilterSummary() {
+  const summaryEl = document.getElementById("mobileFilterSummary");
+  if (!summaryEl) return;
+  const regLabel = currentRegion === "kalimantan" ? "Kalimantan" : "Seluruh Indonesia";
+  const satLabel =
+    currentSatMode === "combined"
+      ? "🌐 Gabungan Satelit"
+      : document.getElementById("layerModeSelect")?.selectedOptions?.[0]?.textContent?.split("—")?.[1]?.trim() ||
+        "🛰️ Satelit Spesifik";
+  summaryEl.textContent = `${satLabel} · ${regLabel}`;
+}
+
+let lastWasNarrow = window.innerWidth <= 1120;
+function applyResponsiveLayoutDefaults(isInitial = false) {
+  const w = window.innerWidth;
+  const isNarrow = w <= 1120;
+  const isCompactControls = w <= 960;
+
+  if (isInitial) {
+    // Pada split-screen / tablet / mobile, otomatis sembunyikan drawer panel & ciutkan filter agar peta luas
+    if (isNarrow) {
+      setSidebarCollapsed(true);
+    }
+    if (isCompactControls) {
+      setTopFiltersCollapsed(true);
+      setTimePickerCollapsed(true);
+    }
+  } else if (isNarrow !== lastWasNarrow) {
+    // Saat jendela diperkecil ke mode split-screen atau diperbesar kembali ke layar penuh
+    setSidebarCollapsed(isNarrow);
+    if (isCompactControls) {
+      setTopFiltersCollapsed(true);
+      setTimePickerCollapsed(true);
+    } else {
+      setTopFiltersCollapsed(false);
+      setTimePickerCollapsed(false);
+    }
+    lastWasNarrow = isNarrow;
+  } else {
+    // Perbarui label tombol topbar jika melintasi batas mobile
+    const layout = document.getElementById("mainLayout");
+    if (layout) setSidebarCollapsed(layout.classList.contains("sidebar-collapsed"));
+  }
+  updateMobileFilterSummary();
 }
 
 // ResizeObserver memastikan kanvas peta Leaflet menyesuaikan ukuran setiap frame transisi tanpa lompatan (pan: false)
@@ -1797,8 +1884,28 @@ if (mapCanvasWrapEl && typeof ResizeObserver !== "undefined") {
   ro.observe(mapCanvasWrapEl);
 }
 
+window.addEventListener("resize", () => applyResponsiveLayoutDefaults(false));
+
 document.getElementById("toggleSidebarBtn")?.addEventListener("click", toggleRightSidebar);
 document.getElementById("mapSidebarHandle")?.addEventListener("click", toggleRightSidebar);
+document.getElementById("closeSidebarDrawerBtn")?.addEventListener("click", () => setSidebarCollapsed(true));
+document.getElementById("sidebarBackdrop")?.addEventListener("click", () => setSidebarCollapsed(true));
+
+document.getElementById("toggleTopFiltersBtn")?.addEventListener("click", () => {
+  const bar = document.getElementById("mapOverlayTop");
+  if (!bar) return;
+  setTopFiltersCollapsed(!bar.classList.contains("filters-collapsed"));
+});
+
+document.getElementById("toggleTimePickerBtn")?.addEventListener("click", () => {
+  const bar = document.getElementById("timeBar");
+  if (!bar) return;
+  setTimePickerCollapsed(!bar.classList.contains("timepicker-collapsed"));
+});
+
+["regionSelect", "satModeSelect", "layerModeSelect", "basemapSelect"].forEach((id) => {
+  document.getElementById(id)?.addEventListener("change", updateMobileFilterSummary);
+});
 
 // Toggle Ciutkan / Bentangkan Kartu Legenda Suhu
 document.getElementById("legendCollapseBtn")?.addEventListener("click", () => {
@@ -1810,6 +1917,7 @@ document.getElementById("legendCollapseBtn")?.addEventListener("click", () => {
 });
 
 initDateTimePicker();
+applyResponsiveLayoutDefaults(true);
 setTimeout(() => map.invalidateSize(), 80);
 fetchManifest(false);
 setupAutoRefresh();

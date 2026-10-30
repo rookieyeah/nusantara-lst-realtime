@@ -43,6 +43,7 @@ body {
   background: var(--bg-dark);
   color: var(--text-main);
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -51,6 +52,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
 }
 
 /* Header */
@@ -320,26 +322,73 @@ body {
   position: relative;
   z-index: 25;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
+  flex-direction: column;
+  gap: 0.45rem;
   background: linear-gradient(180deg, #111c33 0%, #0d1526 100%);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.85rem;
+}
+
+.mobile-toolbar-bar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.mobile-toolbar-summary {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-compact-toggle {
+  background: rgba(56, 189, 248, 0.12);
+  color: var(--accent-blue);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 0.28rem 0.62rem;
+  font-size: 0.72rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-compact-toggle:hover {
+  background: rgba(56, 189, 248, 0.24);
+}
+
+.filter-controls-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.map-overlay-top.filters-collapsed .filter-controls-grid {
+  display: none !important;
 }
 
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 0.18rem;
+  gap: 0.16rem;
+  min-width: 0;
 }
 
 .control-group label {
-  font-size: 0.66rem;
+  font-size: 0.65rem;
   color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .control-group select,
@@ -352,6 +401,9 @@ body {
   font-family: var(--font-sans);
   font-size: 0.74rem;
   font-weight: 600;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -562,10 +614,15 @@ input[type="range"] {
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+.time-bar.timepicker-collapsed .datetime-picker-row {
+  display: none !important;
+}
+
 .dt-group {
   display: flex;
   flex-direction: column;
   gap: 0.16rem;
+  min-width: 0;
 }
 
 .dt-group label {
@@ -574,6 +631,9 @@ input[type="range"] {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dt-group select,
@@ -586,16 +646,20 @@ input[type="range"] {
   font-family: var(--font-sans);
   font-size: 0.74rem;
   font-weight: 600;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
 }
 
 .slider-row {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.65rem;
 }
 
 .time-slider-wrap {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.18rem;
@@ -605,18 +669,25 @@ input[type="range"] {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: 0.4rem;
 }
 
 .time-primary {
   font-size: 0.82rem;
   font-weight: 800;
   color: var(--accent-blue);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .time-secondary {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #frameSlider {
@@ -635,6 +706,40 @@ input[type="range"] {
   border-radius: 6px;
   min-width: 54px;
   text-align: center;
+  flex-shrink: 0;
+}
+
+/* Backdrop & Drawer Header (hidden on wide desktop, active on split-screen/mobile) */
+.sidebar-backdrop {
+  display: none;
+}
+
+.sidebar-drawer-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.8rem;
+  background: #0a1222;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.drawer-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+}
+
+.btn-drawer-close {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  padding: 0.26rem 0.62rem;
+  font-size: 0.72rem;
+  border-radius: 6px;
+}
+
+.btn-drawer-close:hover {
+  background: rgba(248, 113, 113, 0.28);
 }
 
 /* Sidebar & Tabs — Fixed 420px width so internal content never squashes/reflows during slide */
@@ -984,4 +1089,253 @@ input[type="range"] {
 .granule-row:hover {
   border-color: var(--accent-blue);
   background: rgba(20, 31, 54, 0.8);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN: SPLIT-SCREEN (<= 1120px), TABLET (<= 860px) & MOBILE (<= 640px)
+   ============================================================================ */
+
+@media (max-width: 1120px) {
+  .topbar {
+    padding: 0.42rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .brand {
+    gap: 0.55rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand h1 {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .subtitle {
+    display: none;
+  }
+
+  .topbar-controls {
+    gap: 0.38rem;
+    flex-shrink: 0;
+  }
+
+  .status-pill,
+  .btn,
+  .auto-refresh-toggle {
+    white-space: nowrap;
+    padding: 0.28rem 0.56rem;
+    font-size: 0.7rem;
+  }
+
+  /* Tampilkan bar ringkas di bagian atas peta untuk buka/tutup filter */
+  .mobile-toolbar-bar {
+    display: flex;
+  }
+
+  .map-overlay-top {
+    padding: 0.38rem 0.68rem;
+    gap: 0.38rem;
+  }
+
+  .filter-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.42rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .control-group select {
+    width: 100%;
+  }
+
+  .checkbox-group {
+    align-self: stretch;
+  }
+
+  .time-bar {
+    padding: 0.42rem 0.68rem;
+    gap: 0.38rem;
+  }
+
+  .datetime-picker-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.42rem;
+    padding-bottom: 0.38rem;
+  }
+
+  .dt-group select,
+  .dt-group input[type="date"],
+  #applyDateTimeBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Sidebar menjadi Slide-Over Drawer sehingga Peta selalu mendapat 100% lebar layar */
+  .sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1350;
+    width: min(410px, 92vw);
+    min-width: 0;
+    margin-right: 0 !important;
+    transform: translate3d(0, 0, 0);
+    box-shadow: -12px 0 36px rgba(0, 0, 0, 0.78);
+  }
+
+  .main-layout.sidebar-collapsed .sidebar {
+    margin-right: 0 !important;
+    transform: translate3d(104%, 0, 0);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sidebar-drawer-header {
+    display: flex;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(4, 8, 16, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 1300;
+    opacity: 1;
+    transition: opacity 0.28s ease;
+  }
+
+  .main-layout.sidebar-collapsed .sidebar-backdrop {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .map-legend {
+    width: min(310px, calc(100% - 20px));
+    bottom: 22px;
+    right: 10px;
+    padding: 0.48rem 0.72rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .auto-refresh-toggle {
+    display: none;
+  }
+
+  .status-pill {
+    max-width: 185px;
+    overflow: hidden;
+  }
+
+  #liveStatusText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 0.36rem 0.52rem;
+    gap: 0.35rem;
+  }
+
+  .brand {
+    gap: 0.4rem;
+  }
+
+  .brand-badge {
+    padding: 0.28rem 0.45rem;
+    font-size: 0.72rem;
+    border-radius: 7px;
+  }
+
+  .brand h1 {
+    font-size: 0.78rem;
+  }
+
+  .status-pill {
+    max-width: 118px;
+    padding: 0.22rem 0.45rem;
+    font-size: 0.64rem;
+    gap: 0.3rem;
+  }
+
+  #refreshNowBtn,
+  #toggleSidebarBtn {
+    padding: 0.25rem 0.46rem;
+    font-size: 0.66rem;
+  }
+
+  .filter-controls-grid,
+  .datetime-picker-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 36vh;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  #applyDateTimeBtn {
+    grid-column: 1 / -1;
+    padding: 0.4rem;
+  }
+
+  .slider-row {
+    gap: 0.38rem;
+  }
+
+  .time-primary {
+    font-size: 0.72rem;
+  }
+
+  .time-secondary {
+    font-size: 0.62rem;
+  }
+
+  .frame-counter {
+    display: none;
+  }
+
+  .map-legend {
+    bottom: 20px;
+    right: 8px;
+    width: min(260px, calc(100% - 16px));
+    padding: 0.4rem 0.58rem;
+  }
+
+  .map-legend.legend-collapsed {
+    width: 195px;
+    padding: 0.35rem 0.55rem;
+  }
+
+  .legend-title {
+    font-size: 0.68rem;
+  }
+
+  .legend-labels {
+    font-size: 0.58rem;
+    height: 18px;
+  }
+
+  .legend-note {
+    display: none;
+  }
+
+  .sidebar {
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .tab-btn {
+    font-size: 0.66rem;
+    padding: 0.45rem 0.15rem;
+  }
 }

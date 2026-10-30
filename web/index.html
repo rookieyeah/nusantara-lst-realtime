@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Nusantara LST — Sistem Pemantauan &amp; Deteksi Suhu Permukaan Bumi (Fase 1–6)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +16,7 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
     crossorigin=""
   />
-  <link rel="stylesheet" href="styles.css?v=pal7" />
+  <link rel="stylesheet" href="styles.css?v=resp1" />
 </head>
 <body>
   <div class="app-shell">
@@ -58,91 +58,102 @@
       <!-- Map Section -->
       <main class="map-section">
         <!-- Top Controls Toolbar -->
-        <div class="map-overlay-top">
-          <div class="control-group">
-            <label for="basemapSelect">Latar Peta (Basemap)</label>
-            <select id="basemapSelect">
-              <option value="google_hybrid" selected>Google Satelit + Label Indonesia</option>
-              <option value="google_sat">Google Satelit (Murni)</option>
-              <option value="google_streets">Peta Jalan Indonesia (Google Maps)</option>
-              <option value="google_terrain">Peta Topografi / Terrain Indonesia</option>
-              <option value="osm_id">Peta OpenStreetMap Indonesia</option>
-              <option value="esri_sat">Citra Satelit Esri World Imagery</option>
-              <option value="carto_dark">Peta Gelap (Kontras Termal)</option>
-            </select>
+        <div class="map-overlay-top" id="mapOverlayTop">
+          <div class="mobile-toolbar-bar">
+            <span class="mobile-toolbar-summary" id="mobileFilterSummary">
+              🛰️ Gabungan Satelit · Seluruh Indonesia
+            </span>
+            <button class="btn btn-compact-toggle" id="toggleTopFiltersBtn" type="button" title="Tampilkan atau sembunyikan pengaturan layer & filter peta">
+              ⚙️ Filter Peta <span id="toggleTopFiltersIcon">▴</span>
+            </button>
           </div>
 
-          <div class="control-group">
-            <label for="regionSelect">Wilayah Prioritas</label>
-            <select id="regionSelect">
-              <option value="indonesia">Seluruh Indonesia (94.5°–141.5° BT)</option>
-              <option value="kalimantan">Pulau Kalimantan (Fokus Cadangan)</option>
-            </select>
-          </div>
+          <div class="filter-controls-grid" id="filterControlsGrid">
+            <div class="control-group">
+              <label for="basemapSelect">Latar Peta (Basemap)</label>
+              <select id="basemapSelect">
+                <option value="google_hybrid" selected>Google Satelit + Label Indonesia</option>
+                <option value="google_sat">Google Satelit (Murni)</option>
+                <option value="google_streets">Peta Jalan Indonesia (Google Maps)</option>
+                <option value="google_terrain">Peta Topografi / Terrain Indonesia</option>
+                <option value="osm_id">Peta OpenStreetMap Indonesia</option>
+                <option value="esri_sat">Citra Satelit Esri World Imagery</option>
+                <option value="carto_dark">Peta Gelap (Kontras Termal)</option>
+              </select>
+            </div>
 
-          <div class="control-group">
-            <label for="satModeSelect">Mode Sumber Satelit</label>
-            <select id="satModeSelect">
-              <option value="combined" selected>🌐 Gabungan Satelit (Tanpa Satelit Spesifik)</option>
-              <option value="specific">🛰️ Gunakan Satelit Spesifik</option>
-            </select>
-          </div>
+            <div class="control-group">
+              <label for="regionSelect">Wilayah Prioritas</label>
+              <select id="regionSelect">
+                <option value="indonesia">Seluruh Indonesia (94.5°–141.5° BT)</option>
+                <option value="kalimantan">Pulau Kalimantan (Fokus Cadangan)</option>
+              </select>
+            </div>
 
-          <div class="control-group" id="specificSatGroup" style="display:none;">
-            <label for="layerModeSelect">Pilih Satelit Spesifik</label>
-            <select id="layerModeSelect">
-              <option value="himawari_lst">Tier 1 — Himawari-9 AHI LST (2 km)</option>
-              <option value="viirs_gibs_day">Tier 2 — NASA VIIRS/MODIS LST Siang (1 km)</option>
-              <option value="viirs_gibs_night">Tier 2 — NASA VIIRS/MODIS LST Malam (1 km)</option>
-              <option value="landsat_uhi_balikpapan_ikn">Tier 3 — Landsat 8/9 100m: Balikpapan &amp; IKN</option>
-              <option value="landsat_uhi_banjarmasin">Tier 3 — Landsat 8/9 100m: Banjarmasin</option>
-              <option value="landsat_uhi_jakarta">Tier 3 — Landsat 8/9 100m: DKI Jakarta</option>
-              <option value="himawari_anomaly">Fase 5 — Peta Anomali Suhu (ΔT °C vs Baseline)</option>
-            </select>
-          </div>
+            <div class="control-group">
+              <label for="satModeSelect">Mode Sumber Satelit</label>
+              <select id="satModeSelect">
+                <option value="combined" selected>🌐 Gabungan Satelit (Tanpa Satelit Spesifik)</option>
+                <option value="specific">🛰️ Gunakan Satelit Spesifik</option>
+              </select>
+            </div>
 
-          <div class="control-group">
-            <label for="islandJump">Lompat Cepat Kawasan</label>
-            <select id="islandJump">
-              <option value="">-- Pilih Pulau / Kota Fokus --</option>
-              <option value="-2.5,118.0,5">Seluruh Indonesia</option>
-              <option value="0.5,114.0,6">Pulau Kalimantan</option>
-              <option value="-1.10,116.85,10">Balikpapan &amp; IKN Nusantara</option>
-              <option value="-3.36,114.70,10">Banjarmasin &amp; Banjarbaru</option>
-              <option value="-0.03,109.34,10">Pontianak &amp; Kubu Raya</option>
-              <option value="-6.22,106.85,10">DKI Jakarta &amp; Jabodetabek</option>
-              <option value="-0.5,101.5,6">Pulau Sumatera</option>
-              <option value="-7.2,110.0,7">Pulau Jawa</option>
-              <option value="-2.0,120.5,6">Pulau Sulawesi</option>
-              <option value="-8.6,119.0,7">Bali &amp; Nusa Tenggara</option>
-              <option value="-4.0,136.0,6">Maluku &amp; Papua</option>
-            </select>
-          </div>
+            <div class="control-group" id="specificSatGroup" style="display:none;">
+              <label for="layerModeSelect">Pilih Satelit Spesifik</label>
+              <select id="layerModeSelect">
+                <option value="himawari_lst">Tier 1 — Himawari-9 AHI LST (2 km)</option>
+                <option value="viirs_gibs_day">Tier 2 — NASA VIIRS/MODIS LST Siang (1 km)</option>
+                <option value="viirs_gibs_night">Tier 2 — NASA VIIRS/MODIS LST Malam (1 km)</option>
+                <option value="landsat_uhi_balikpapan_ikn">Tier 3 — Landsat 8/9 100m: Balikpapan &amp; IKN</option>
+                <option value="landsat_uhi_banjarmasin">Tier 3 — Landsat 8/9 100m: Banjarmasin</option>
+                <option value="landsat_uhi_jakarta">Tier 3 — Landsat 8/9 100m: DKI Jakarta</option>
+                <option value="himawari_anomaly">Fase 5 — Peta Anomali Suhu (ΔT °C vs Baseline)</option>
+              </select>
+            </div>
 
-          <div class="control-group">
-            <label for="opacityRange">Opasitas (<span id="opacityVal">85%</span>)</label>
-            <input type="range" id="opacityRange" min="10" max="100" value="85" />
-          </div>
+            <div class="control-group">
+              <label for="islandJump">Lompat Cepat Kawasan</label>
+              <select id="islandJump">
+                <option value="">-- Pilih Pulau / Kota Fokus --</option>
+                <option value="-2.5,118.0,5">Seluruh Indonesia</option>
+                <option value="0.5,114.0,6">Pulau Kalimantan</option>
+                <option value="-1.10,116.85,10">Balikpapan &amp; IKN Nusantara</option>
+                <option value="-3.36,114.70,10">Banjarmasin &amp; Banjarbaru</option>
+                <option value="-0.03,109.34,10">Pontianak &amp; Kubu Raya</option>
+                <option value="-6.22,106.85,10">DKI Jakarta &amp; Jabodetabek</option>
+                <option value="-0.5,101.5,6">Pulau Sumatera</option>
+                <option value="-7.2,110.0,7">Pulau Jawa</option>
+                <option value="-2.0,120.5,6">Pulau Sulawesi</option>
+                <option value="-8.6,119.0,7">Bali &amp; Nusa Tenggara</option>
+                <option value="-4.0,136.0,6">Maluku &amp; Papua</option>
+              </select>
+            </div>
 
-          <div class="control-group checkbox-group">
-            <label title="Tandai piksel suhu ekstrem (LST > rata-rata + 2σ)">
-              <input type="checkbox" id="hotspotToggle" checked />
-              <span>Hotspot (&gt; μ+2σ)</span>
-            </label>
-          </div>
+            <div class="control-group">
+              <label for="opacityRange">Opasitas (<span id="opacityVal">85%</span>)</label>
+              <input type="range" id="opacityRange" min="10" max="100" value="85" />
+            </div>
 
-          <div class="control-group checkbox-group">
-            <label title="Tampilkan 18 Stasiun Validasi BMKG/WMO di peta">
-              <input type="checkbox" id="bmkgToggle" checked />
-              <span>Stasiun BMKG (18)</span>
-            </label>
-          </div>
+            <div class="control-group checkbox-group">
+              <label title="Tandai piksel suhu ekstrem (LST > rata-rata + 2σ)">
+                <input type="checkbox" id="hotspotToggle" checked />
+                <span>Hotspot (&gt; μ+2σ)</span>
+              </label>
+            </div>
 
-          <div class="control-group checkbox-group">
-            <label title="Tampilkan label nama kota, batas provinsi & jalan Indonesia di atas layer suhu">
-              <input type="checkbox" id="labelsToggle" checked />
-              <span>Label Wilayah di Atas Suhu</span>
-            </label>
+            <div class="control-group checkbox-group">
+              <label title="Tampilkan 18 Stasiun Validasi BMKG/WMO di peta">
+                <input type="checkbox" id="bmkgToggle" checked />
+                <span>Stasiun BMKG (18)</span>
+              </label>
+            </div>
+
+            <div class="control-group checkbox-group">
+              <label title="Tampilkan label nama kota, batas provinsi & jalan Indonesia di atas layer suhu">
+                <input type="checkbox" id="labelsToggle" checked />
+                <span>Label Wilayah</span>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -185,9 +196,9 @@
         </div>
 
         <!-- Bottom Time & Date-Range Bar -->
-        <div class="time-bar">
+        <div class="time-bar" id="timeBar">
           <!-- Baris Atas: Pemilih Mode Rentang Waktu, Tanggal & Jam -->
-          <div class="datetime-picker-row">
+          <div class="datetime-picker-row" id="dateTimePickerRow">
             <div class="dt-group">
               <label for="timeTierSelect">Rentang Waktu Pengambilan Citra</label>
               <select id="timeTierSelect">
@@ -261,12 +272,26 @@
             </div>
 
             <div class="frame-counter" id="frameCounter">0 / 0</div>
+
+            <button class="btn btn-compact-toggle" id="toggleTimePickerBtn" type="button" title="Tampilkan atau sembunyikan pemilih tanggal & rentang waktu">
+              📅 Waktu <span id="toggleTimePickerIcon">▴</span>
+            </button>
           </div>
         </div>
       </main>
 
+      <!-- Backdrop for Split-Screen / Mobile Drawer -->
+      <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
       <!-- Right Sidebar with 4 Tabs covering Phases 1 to 6 -->
       <aside class="sidebar">
+        <!-- Mobile / Split-Screen Drawer Top Header -->
+        <div class="sidebar-drawer-header">
+          <span class="drawer-title">📊 Detail Informasi &amp; Analisis LST</span>
+          <button class="btn btn-drawer-close" id="closeSidebarDrawerBtn" type="button">
+            ✕ Tutup
+          </button>
+        </div>
         <!-- Tab Navigation -->
         <nav class="tab-nav">
           <button class="tab-btn active" data-tab="tab-overview">1. Ikhtisar</button>
@@ -504,6 +529,6 @@
     crossorigin=""
   ></script>
   <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
-  <script src="app.js?v=pal7"></script>
+  <script src="app.js?v=resp1"></script>
 </body>
 </html>

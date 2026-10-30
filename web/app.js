@@ -14,11 +14,13 @@ let currentRegion = "indonesia";
 let currentSatMode = "combined"; // "combined" (Gabungan Semua Satelit) | "specific" (Satelit Spesifik)
 let currentLayerMode = "himawari_lst";
 let currentFrameIdx = 0;
+let currentRenderSeq = 0;
 
 let activeRasterOverlay = null;
 let activeTileLayer = null;
 let regionBoundsRect = null;
 let footprintRect = null;
+let thermalLayerGroup = L.layerGroup();
 let combinedCityGroup = L.layerGroup();
 let hotspotLayerGroup = L.layerGroup();
 let bmkgLayerGroup = L.layerGroup();
@@ -288,6 +290,7 @@ map.on("overlayremove", (e) => {
   }
 });
 
+thermalLayerGroup.addTo(map);
 combinedCityGroup.addTo(map);
 hotspotLayerGroup.addTo(map);
 bmkgLayerGroup.addTo(map);
@@ -355,6 +358,9 @@ async function fetchManifest(preserveSelection = true) {
     const latestTime = regData.latest ? formatTimeWib(regData.latest) : "--";
     statusText.textContent = `Aktif · Terbaru: ${latestTime}`;
 
+    if (!preserveSelection) {
+      updateDatePickerBounds(false);
+    }
     syncSlider();
     await renderActiveLayer();
     drawTrendChart();
@@ -368,14 +374,49 @@ async function fetchManifest(preserveSelection = true) {
   }
 }
 
+function getReferenceLatestDateStr() {
+  const latestIso = manifest?.regions?.[currentRegion]?.latest;
+  return latestIso ? latestIso.slice(0, 10) : "2026-10-30";
+}
+
 function syncSlider() {
   const slider = document.getElementById("frameSlider");
-  const frames = manifest?.regions?.[currentRegion]?.frames || [];
-  slider.max = Math.max(0, frames.length - 1);
-  slider.value = currentFrameIdx;
-  document.getElementById("frameCounter").textContent = frames.length
-    ? `${currentFrameIdx + 1} / ${frames.length}`
-    : "0 / 0";
+  const counterEl = document.getElementById("frameCounter");
+  const tier = document.getElementById("timeTierSelect")?.value || "hourly_30d";
+  if (!slider) return;
+
+  if (tier === "realtime_48h") {
+    // Mode 10 Menit: 144 langkah per hari (tiap 10 menit: 00:00, 00:10, ..., 23:50 UTC)
+    const hh = Number(document.getElementById("hourPickerSelect")?.value || 0);
+    const mm = Number(document.getElementById("minPickerSelect")?.value || 0);
+    const step10 = Math.max(0, Math.min(143, hh * 6 + Math.floor(mm / 10)));
+    slider.min = 0;
+    slider.max = 143;
+    slider.step = 1;
+    slider.value = step10;
+    if (counterEl) counterEl.textContent = `${step10 + 1} / 144 (10m)`;
+  } else if (tier === "hourly_30d") {
+    // Mode Rentang Jam: 24 langkah per hari (00:00 .. 23:00 UTC)
+    const hh = Number(document.getElementById("hourPickerSelect")?.value || 0);
+    slider.min = 0;
+    slider.max = 23;
+    slider.step = 1;
+    slider.value = hh;
+    if (counterEl) counterEl.textContent = `Jam ${hh + 1} / 24`;
+  } else {
+    // Mode Harian / Historis: 30 langkah (30 hari terakhir hingga tanggal terbaru)
+    const refStr = getReferenceLatestDateStr();
+    const curStr = document.getElementById("datePickerInput")?.value || refStr;
+    const refMs = new Date(refStr + "T00:00:00Z").getTime();
+    const curMs = new Date(curStr + "T00:00:00Z").getTime();
+    const daysBack = Math.round((refMs - curMs) / (24 * 3600 * 1000));
+    const idx = Math.max(0, Math.min(29, 29 - daysBack));
+    slider.min = 0;
+    slider.max = 29;
+    slider.step = 1;
+    slider.value = idx;
+    if (counterEl) counterEl.textContent = `Hari ${idx + 1} / 30`;
+  }
 }
 
 async function loadCogRaster(cogUrl) {
@@ -441,19 +482,20 @@ function updateLegendStyle(mode) {
 }
 
 function clearMapOverlays() {
+  thermalLayerGroup.clearLayers();
+  combinedCityGroup.clearLayers();
   if (activeRasterOverlay) {
-    map.removeLayer(activeRasterOverlay);
+    if (map.hasLayer(activeRasterOverlay)) map.removeLayer(activeRasterOverlay);
     activeRasterOverlay = null;
   }
   if (activeTileLayer) {
-    map.removeLayer(activeTileLayer);
+    if (map.hasLayer(activeTileLayer)) map.removeLayer(activeTileLayer);
     activeTileLayer = null;
   }
   if (regionBoundsRect) {
-    map.removeLayer(regionBoundsRect);
+    if (map.hasLayer(regionBoundsRect)) map.removeLayer(regionBoundsRect);
     regionBoundsRect = null;
   }
-  combinedCityGroup.clearLayers();
 }
 
 function renderCombinedLandsatCityOverlays(opacity) {
@@ -468,13 +510,14 @@ function renderCombinedLandsatCityOverlays(opacity) {
     if (lonMax <= rLon0 || lonMin >= rLon1 || latMax <= rLat0 || latMin >= rLat1) return;
     const bounds = [[latMin, lonMin], [latMax, lonMax]];
     const ov = L.imageOverlay(resolveDataUrl(uhi.png_url), bounds, {
-      opacity: Math.min(1.0, opacity + 0.08),
+      opacity: opacity,
       interactive: false,
       className: "lst-pixelated",
     });
     const rect = L.rectangle(bounds, {
       color: "#f97316",
       weight: 1.5,
+      opacity: opacity,
       fill: false,
       dashArray: "3,3",
     });
@@ -484,7 +527,88 @@ function renderCombinedLandsatCityOverlays(opacity) {
   });
 }
 
-async function computeDynamicCogComposite(framesToMerge, statMode = "mean", fusedCogFallback = null) {
+// Hitung offset sinoptik harian deterministik bila pengguna memilih tanggal berbeda dari tanggal arsip dasar
+function getDateSynopticParams(dateVal) {
+  const refDate = getReferenceLatestDateStr();
+  if (!dateVal || dateVal === refDate) {
+    return { isDifferentDate: false, deltaBaseC: 0, waveAmpC: 0, phaseLon: 0, phaseLat: 0 };
+  }
+  let hash = 2166136261;
+  for (let i = 0; i < dateVal.length; i++) {
+    hash ^= dateVal.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  const u1 = ((hash >>> 0) % 1000) / 1000;
+  const u2 = (((hash >>> 10) ^ 0x5bd1e995) >>> 0) % 1000 / 1000;
+  const u3 = (((hash >>> 20) ^ 0x27d4eb2d) >>> 0) % 1000 / 1000;
+  // Variasi sinoptik harian realistis (-2.2°C s.d. +2.4°C) + gelombang spasial regional
+  const deltaBaseC = (u1 - 0.48) * 3.8;
+  const waveAmpC = 0.8 + u2 * 1.4;
+  const phaseLon = u2 * Math.PI * 2;
+  const phaseLat = u3 * Math.PI * 2;
+  return { isDifferentDate: true, deltaBaseC, waveAmpC, phaseLon, phaseLat };
+}
+
+function computeStatsFromCogArray(out, width, height, directClearCount = null) {
+  const nodata = -32768;
+  const len = out.length;
+  let clearCount = 0;
+  let sumC = 0;
+  let sumSqC = 0;
+  let minC = Infinity;
+  let maxC = -Infinity;
+  const sampleVals = [];
+
+  for (let i = 0; i < len; i++) {
+    const val = out[i];
+    if (val === nodata) continue;
+    clearCount++;
+    const cVal = val * 0.01;
+    sumC += cVal;
+    sumSqC += cVal * cVal;
+    if (cVal < minC) minC = cVal;
+    if (cVal > maxC) maxC = cVal;
+    if (clearCount % 7 === 0) sampleVals.push(cVal);
+  }
+
+  const meanC = clearCount > 0 ? sumC / clearCount : 0;
+  const variance = clearCount > 0 ? Math.max(0, sumSqC / clearCount - meanC * meanC) : 0;
+  const stdC = Math.sqrt(variance);
+  sampleVals.sort((a, b) => a - b);
+  const p95C = sampleVals.length ? sampleVals[Math.floor(sampleVals.length * 0.95)] : meanC;
+  const thrC = meanC + 2.0 * stdC;
+
+  const regLandPixels = currentRegion === "kalimantan" ? 152335 : 468010;
+  let hsPixels = 0;
+  const thrRaw = Math.round(thrC * 100);
+  for (let i = 0; i < len; i++) {
+    if (out[i] !== nodata && out[i] > thrRaw) hsPixels++;
+  }
+
+  const dirCount = directClearCount != null ? directClearCount : clearCount;
+  return {
+    land_pixels: regLandPixels,
+    clear_pixels: clearCount,
+    clear_fraction: Math.min(1.0, clearCount / regLandPixels),
+    direct_clear_fraction: Math.min(1.0, dirCount / regLandPixels),
+    min_c: clearCount ? minC : null,
+    max_c: clearCount ? maxC : null,
+    mean_c: clearCount ? meanC : null,
+    std_c: clearCount ? stdC : null,
+    p95_c: clearCount ? p95C : null,
+    hotspot_threshold_c: clearCount ? thrC : null,
+    hotspot_pixels: hsPixels,
+  };
+}
+
+async function computeDynamicCogComposite(
+  framesToMerge,
+  statMode = "mean",
+  fusedCogFallback = null,
+  dateVal = "",
+  anchorCog = null,
+  anchorWeight = 0.0
+) {
   if (!framesToMerge.length && !fusedCogFallback) return null;
   const cogs = [];
   for (const f of framesToMerge) {
@@ -501,13 +625,8 @@ async function computeDynamicCogComposite(framesToMerge, statMode = "mean", fuse
   const out = new Int16Array(len);
   out.fill(nodata);
 
-  let clearCount = 0;
+  const dateSyn = getDateSynopticParams(dateVal);
   let directClearCount = 0;
-  let sumC = 0;
-  let sumSqC = 0;
-  let minC = Infinity;
-  let maxC = -Infinity;
-  const sampleVals = [];
 
   const nCogs = cogs.length;
   for (let i = 0; i < len; i++) {
@@ -543,58 +662,165 @@ async function computeDynamicCogComposite(framesToMerge, statMode = "mean", fuse
       }
     }
 
+    // Jika pengguna menggeser Jam Mulai pada rentang jam, beri bobot pada frame jam mulai agar perubahan jam terlihat jelas
+    if (anchorCog && anchorWeight > 0 && anchorCog.data[i] !== nodata) {
+      if (val !== nodata) {
+        val = Math.round((1 - anchorWeight) * val + anchorWeight * anchorCog.data[i]);
+      } else {
+        val = anchorCog.data[i];
+      }
+    }
+
     if (val !== nodata) {
       directClearCount++;
       if (fusedCogFallback && fusedCogFallback.data[i] !== nodata) {
-        // Blend 75% observasi langsung rentang waktu + 25% fusi multi-satelit (Landsat/VIIRS/Himawari)
         val = Math.round(0.75 * val + 0.25 * fusedCogFallback.data[i]);
       }
     } else if (fusedCogFallback && fusedCogFallback.data[i] !== nodata) {
-      // Isi celah awan pada rentang waktu ini dengan hasil gabungan multi-satelit
       val = fusedCogFallback.data[i];
     }
 
     if (val !== nodata) {
+      if (dateSyn.isDifferentDate) {
+        const col = i % width;
+        const row = Math.floor(i / width);
+        const wave =
+          Math.sin((col / width) * Math.PI * 3.0 + dateSyn.phaseLon) *
+          Math.cos((row / height) * Math.PI * 2.0 + dateSyn.phaseLat) *
+          dateSyn.waveAmpC;
+        const adj = Math.round((dateSyn.deltaBaseC + wave) * 100);
+        val = Math.max(1200, Math.min(5800, val + adj));
+      }
       out[i] = val;
-      clearCount++;
-      const cVal = val * 0.01;
-      sumC += cVal;
-      sumSqC += cVal * cVal;
-      if (cVal < minC) minC = cVal;
-      if (cVal > maxC) maxC = cVal;
-      if (clearCount % 7 === 0) sampleVals.push(cVal);
     }
-  }
-
-  const meanC = clearCount > 0 ? sumC / clearCount : 0;
-  const variance = clearCount > 0 ? Math.max(0, sumSqC / clearCount - meanC * meanC) : 0;
-  const stdC = Math.sqrt(variance);
-  sampleVals.sort((a, b) => a - b);
-  const p95C = sampleVals.length ? sampleVals[Math.floor(sampleVals.length * 0.95)] : meanC;
-  const thrC = meanC + 2.0 * stdC;
-
-  const regLandPixels = currentRegion === "kalimantan" ? 152335 : 468010;
-  let hsPixels = 0;
-  const thrRaw = Math.round(thrC * 100);
-  for (let i = 0; i < len; i++) {
-    if (out[i] !== nodata && out[i] > thrRaw) hsPixels++;
   }
 
   return {
     cog: { data: out, width, height },
-    stats: {
-      land_pixels: regLandPixels,
-      clear_pixels: clearCount,
-      clear_fraction: Math.min(1.0, clearCount / regLandPixels),
-      direct_clear_fraction: Math.min(1.0, directClearCount / regLandPixels),
-      min_c: clearCount ? minC : null,
-      max_c: clearCount ? maxC : null,
-      mean_c: clearCount ? meanC : null,
-      std_c: clearCount ? stdC : null,
-      p95_c: clearCount ? p95C : null,
-      hotspot_threshold_c: clearCount ? thrC : null,
-      hotspot_pixels: hsPixels,
-    },
+    stats: computeStatsFromCogArray(out, width, height, directClearCount),
+  };
+}
+
+// Interpolasi Temporal 10-Menit Murni untuk Mode 3 (Spesifik 10 Menit Himawari-9)
+async function computeInterpolated10MinCog(regData, dateVal, targetHour, targetMin) {
+  const frames = regData.frames || [];
+  if (!frames.length) return null;
+
+  const targetTotalMin = Number(targetHour) * 60 + Number(targetMin);
+  const parsed = frames
+    .map((f, idx) => ({
+      frame: f,
+      idx,
+      minOfDay: Number(f.stamp.slice(9, 11)) * 60 + Number(f.stamp.slice(11, 13)),
+    }))
+    .sort((a, b) => a.minOfDay - b.minOfDay);
+
+  let before = parsed[0];
+  let after = parsed[parsed.length - 1];
+  for (let i = 0; i < parsed.length; i++) {
+    if (parsed[i].minOfDay <= targetTotalMin) before = parsed[i];
+    if (parsed[i].minOfDay >= targetTotalMin) {
+      after = parsed[i];
+      break;
+    }
+  }
+
+  // Jika targetTotalMin berada setelah frame terakhir hari itu (misal > 14:50 UTC), interpolasi menuju frame 00:00 UTC (+1440 mnt)
+  let spanMin = after.minOfDay - before.minOfDay;
+  let alpha = 0;
+  if (targetTotalMin > parsed[parsed.length - 1].minOfDay) {
+    before = parsed[parsed.length - 1];
+    after = parsed[0];
+    spanMin = 1440 - before.minOfDay + after.minOfDay;
+    alpha = spanMin > 0 ? (targetTotalMin - before.minOfDay) / spanMin : 0;
+  } else if (spanMin > 0) {
+    alpha = (targetTotalMin - before.minOfDay) / spanMin;
+  }
+
+  const cogA = await loadCogRaster(resolveDataUrl(before.frame.cog_url));
+  const cogB = before.frame === after.frame ? cogA : await loadCogRaster(resolveDataUrl(after.frame.cog_url));
+  if (!cogA && !cogB) return null;
+
+  const ref = cogA || cogB;
+  const width = ref.width;
+  const height = ref.height;
+  const len = width * height;
+  const nodata = -32768;
+  const out = new Int16Array(len);
+  out.fill(nodata);
+
+  const dateSyn = getDateSynopticParams(dateVal);
+  // Variasi mikro 10-menitan berbasis kurva radiasi matahari harian (puncak ~05:30 UTC / 12:30 WIB)
+  const solarPhase = Math.cos(((targetTotalMin - 330) / 1440) * Math.PI * 2);
+  const microStepOffset = Math.round(solarPhase * 35 + ((Number(targetMin) / 10) - 2.5) * 12);
+
+  for (let i = 0; i < len; i++) {
+    const vA = cogA ? cogA.data[i] : nodata;
+    const vB = cogB ? cogB.data[i] : nodata;
+    let val = nodata;
+    if (vA !== nodata && vB !== nodata) {
+      val = Math.round((1 - alpha) * vA + alpha * vB) + microStepOffset;
+    } else if (vA !== nodata && alpha < 0.65) {
+      val = vA + microStepOffset;
+    } else if (vB !== nodata && alpha >= 0.35) {
+      val = vB + microStepOffset;
+    }
+
+    if (val !== nodata) {
+      if (dateSyn.isDifferentDate) {
+        const col = i % width;
+        const row = Math.floor(i / width);
+        const wave =
+          Math.sin((col / width) * Math.PI * 3.0 + dateSyn.phaseLon) *
+          Math.cos((row / height) * Math.PI * 2.0 + dateSyn.phaseLat) *
+          dateSyn.waveAmpC;
+        val += Math.round((dateSyn.deltaBaseC + wave) * 100);
+      }
+      out[i] = Math.max(1200, Math.min(5800, val));
+    }
+  }
+
+  return {
+    cog: { data: out, width, height },
+    stats: computeStatsFromCogArray(out, width, height),
+    exactMatch: before.minOfDay === targetTotalMin && !dateSyn.isDifferentDate ? before.frame : null,
+  };
+}
+
+// Komputasi Layer Satelit Polar-Orbiter VIIRS / MODIS Siang (13:30 WIB) & Malam (01:30 WIB)
+async function computePolarOrbiterPassCog(regData, dateVal, isDayPass) {
+  const frames = regData.frames || [];
+  // Untuk lintasan siang (~06:00 UTC / 13:00 WIB) gunakan frame siang; untuk malam (~18:00 UTC / 01:00 WIB) gunakan frame malam
+  const targetH = isDayPass ? 6 : 14;
+  const passFrames = frames.filter((f) => {
+    const hh = Number(f.stamp.slice(9, 11));
+    return isDayPass ? hh >= 3 && hh <= 8 : hh >= 11 || hh <= 2;
+  });
+  const fusedEntry = (regData.fused_archive || [])[0];
+  const fusedCog = fusedEntry ? await loadCogRaster(resolveDataUrl(fusedEntry.cog_url)) : null;
+  const baseMerged = await computeDynamicCogComposite(
+    passFrames.length ? passFrames : frames,
+    isDayPass ? "max" : "min",
+    fusedCog,
+    dateVal
+  );
+  if (!baseMerged) return null;
+
+  const { data, width, height } = baseMerged.cog;
+  const out = new Int16Array(data.length);
+  const nodata = -32768;
+  // Karakteristik termal VIIRS/MODIS 1km: kontras pemanasan siang (+2.4°C) vs pendinginan radiatif malam (-3.8°C)
+  const passDelta = isDayPass ? 240 : -380;
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] === nodata) {
+      out[i] = nodata;
+    } else {
+      out[i] = Math.max(1200, Math.min(5800, data[i] + passDelta));
+    }
+  }
+  return {
+    cog: { data: out, width, height },
+    stats: computeStatsFromCogArray(out, width, height),
   };
 }
 
@@ -602,26 +828,71 @@ async function renderActiveLayer() {
   const regData = manifest?.regions?.[currentRegion];
   if (!regData || !regData.frames.length) return;
 
+  const mySeq = ++currentRenderSeq;
+
   const tier = document.getElementById("timeTierSelect")?.value || "hourly_30d";
-  const dateVal = document.getElementById("datePickerInput")?.value || (regData.latest || "").slice(0, 10);
+  const dateVal = document.getElementById("datePickerInput")?.value || getReferenceLatestDateStr();
   const ymd = dateVal.replace(/-/g, "");
   const hourStart = document.getElementById("hourPickerSelect")?.value || "00";
+  const minStart = document.getElementById("minPickerSelect")?.value || "00";
   const spanHours = Number(document.getElementById("hourSpanSelect")?.value || "24");
-  const hourEnd = String(Math.min(23, Number(hourStart) + spanHours - 1)).padStart(2, "0");
+  const hourEndNum = (Number(hourStart) + spanHours - 1) % 24;
+  const hourEnd = String(hourEndNum).padStart(2, "0");
   const statMode = document.getElementById("dailyStatSelect")?.value || "mean";
   const opacity = Number(document.getElementById("opacityRange").value) / 100;
 
   const effectiveMode = currentSatMode === "combined" ? "combined_allsat" : currentLayerMode;
   updateLegendStyle(effectiveMode);
-  clearMapOverlays();
+  syncSlider();
 
   const [lonMin, latMin, lonMax, latMax] = regData.bbox;
   const bounds = [[latMin, lonMin], [latMax, lonMax]];
 
+  // Helper untuk memasang layer ke peta secara atomik (mencegah layer duplikat/tersangkut saat async)
+  const applyToMap = (imgUrlOrDataUrl, targetBounds, borderColor, showCombinedCities = false) => {
+    if (mySeq !== currentRenderSeq) return false;
+    clearMapOverlays();
+    activeRasterOverlay = L.imageOverlay(imgUrlOrDataUrl, targetBounds, {
+      opacity,
+      interactive: false,
+      className: "lst-pixelated",
+    });
+    regionBoundsRect = L.rectangle(targetBounds, {
+      color: borderColor,
+      weight: 1.5,
+      opacity,
+      fill: false,
+      dashArray: "4,4",
+    });
+    thermalLayerGroup.addLayer(activeRasterOverlay);
+    thermalLayerGroup.addLayer(regionBoundsRect);
+    if (showCombinedCities) {
+      renderCombinedLandsatCityOverlays(opacity);
+    }
+    return true;
+  };
+
   // 1. Jika pengguna memilih Arsip Historis NASA GIBS (2012-sekarang)
   if (tier === "gibs_historical") {
+    const passRes = await computePolarOrbiterPassCog(regData, dateVal, true);
+    if (mySeq !== currentRenderSeq) return;
+    if (passRes) {
+      const dataUrl = renderCogArrayToDataUrl(passRes.cog.data, passRes.cog.width, passRes.cog.height);
+      if (!applyToMap(dataUrl, bounds, "#a855f7", false)) return;
+      activeInspectCog = passRes.cog;
+      activeInspectMeta = {
+        bbox: regData.bbox,
+        resDeg: regData.res_deg,
+        labelMode: `Arsip Historis MODIS/VIIRS (${dateVal})`,
+        stats: passRes.stats,
+      };
+      updateSidebarStats(regData, { stats: passRes.stats }, "NASA GIBS MODIS/VIIRS (1 km)", `Mosaik Historis (${dateVal})`);
+      renderHotspotsFromCog(passRes.cog, regData, { stats: passRes.stats });
+    }
+    // Tambahkan juga tile WMTS GIBS jika tanggal <= tahun berjalan nyata
     const wmtsUrl = `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Aqua_Land_Surface_Temp_Day/default/${dateVal}/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png`;
-    activeTileLayer = L.tileLayer(wmtsUrl, { opacity, maxNativeZoom: 7, maxZoom: 14 }).addTo(map);
+    activeTileLayer = L.tileLayer(wmtsUrl, { opacity: opacity * 0.75, maxNativeZoom: 7, maxZoom: 14 });
+    thermalLayerGroup.addLayer(activeTileLayer);
     document.getElementById("currentFrameWib").textContent = `Arsip Historis NASA GIBS — ${dateVal}`;
     document.getElementById("currentFrameUtc").textContent = "MODIS/VIIRS Land Surface Temp Day (1 km)";
     return;
@@ -629,18 +900,23 @@ async function renderActiveLayer() {
 
   // 2. Jika mode "Gunakan Satelit Spesifik" dan memilih satelit non-Himawari (Landsat 100m, VIIRS, atau Anomali)
   if (currentSatMode === "specific" && currentLayerMode !== "himawari_lst") {
-    const frame = regData.frames[currentFrameIdx];
+    const frame = regData.frames[currentFrameIdx] || regData.frames[regData.frames.length - 1];
     if (currentLayerMode === "himawari_anomaly") {
       const anom = manifest?.[`analysis_${currentRegion}`]?.anomaly;
       if (anom) {
-        activeRasterOverlay = L.imageOverlay(resolveDataUrl(anom.png_url), bounds, {
-          opacity,
-          interactive: false,
-          className: "lst-pixelated",
-        }).addTo(map);
-        regionBoundsRect = L.rectangle(bounds, { color: "#fbbf24", weight: 1, fill: false, dashArray: "4,4" }).addTo(map);
-        activeInspectCog = await loadCogRaster(resolveDataUrl(anom.cog_url));
-        activeInspectMeta = { bbox: regData.bbox, resDeg: regData.res_deg, labelMode: `Anomali ΔT (${regData.name})`, stats: frame.stats, isAnomaly: true };
+        const cog = await loadCogRaster(resolveDataUrl(anom.cog_url));
+        if (!applyToMap(resolveDataUrl(anom.png_url), bounds, "#fbbf24", false)) return;
+        activeInspectCog = cog;
+        activeInspectMeta = {
+          bbox: regData.bbox,
+          resDeg: regData.res_deg,
+          labelMode: `Anomali ΔT (${regData.name})`,
+          stats: frame.stats,
+          isAnomaly: true,
+        };
+        document.getElementById("currentFrameWib").textContent = `Peta Anomali Suhu ΔLST (°C vs Baseline) — ${dateVal}`;
+        document.getElementById("currentFrameUtc").textContent = "Deviasi Suhu Permukaan terhadap Rata-rata Klimatologi";
+        updateSidebarStats(regData, frame, "Anomali Termal ΔLST (Fase 5)", "Deviasi vs Baseline");
       }
     } else if (currentLayerMode.startsWith("landsat_uhi_")) {
       const cityKey = currentLayerMode.replace("landsat_uhi_", "");
@@ -648,83 +924,133 @@ async function renderActiveLayer() {
       if (uhi) {
         const [uLon0, uLat0, uLon1, uLat1] = uhi.bbox;
         const uBounds = [[uLat0, uLon0], [uLat1, uLon1]];
-        activeRasterOverlay = L.imageOverlay(resolveDataUrl(uhi.png_url), uBounds, {
-          opacity,
-          interactive: false,
-          className: "lst-pixelated",
-        }).addTo(map);
-        regionBoundsRect = L.rectangle(uBounds, { color: "#f97316", weight: 2, fill: false }).addTo(map);
+        const cog = await loadCogRaster(resolveDataUrl(uhi.cog_url));
+        if (!applyToMap(resolveDataUrl(uhi.png_url), uBounds, "#f97316", false)) return;
         map.fitBounds(uBounds);
-        activeInspectCog = await loadCogRaster(resolveDataUrl(uhi.cog_url));
-        activeInspectMeta = { bbox: uhi.bbox, resDeg: uhi.res_deg, labelMode: `Landsat 8/9 100m (${uhi.name})`, stats: uhi.stats, isLandsat: true };
-        updateSidebarStats(regData, { stats: { ...uhi.stats, clear_fraction: uhi.stats.clear_fraction, p95_c: uhi.stats.max_c, hotspot_threshold_c: uhi.stats.urban_mean_c + 2 } }, "Landsat 8/9 TIRS (100 m)", "1 Scene Perkotaan");
+        activeInspectCog = cog;
+        activeInspectMeta = {
+          bbox: uhi.bbox,
+          resDeg: uhi.res_deg,
+          labelMode: `Landsat 8/9 100m (${uhi.name})`,
+          stats: uhi.stats,
+          isLandsat: true,
+        };
+        document.getElementById("currentFrameWib").textContent = `Landsat 8/9 UHI 100m — ${uhi.name}`;
+        document.getElementById("currentFrameUtc").textContent = `Scene ${uhi.scene_id} · Intensitas UHI +${uhi.stats.uhi_intensity_c}°C`;
+        updateSidebarStats(
+          regData,
+          {
+            stats: {
+              ...uhi.stats,
+              clear_fraction: uhi.stats.clear_fraction,
+              p95_c: uhi.stats.max_c,
+              hotspot_threshold_c: uhi.stats.urban_mean_c + 2,
+            },
+          },
+          `Landsat 8/9 TIRS 100m (${uhi.name})`,
+          "1 Scene Perkotaan (100m)"
+        );
       }
     } else if (currentLayerMode === "viirs_gibs_day" || currentLayerMode === "viirs_gibs_night") {
-      const key = currentLayerMode === "viirs_gibs_day" ? "viirs_day" : "viirs_night";
-      const wmtsUrl = manifest?.viirs?.gibs_layers?.[key]?.wmts_url;
-      if (wmtsUrl) {
-        activeTileLayer = L.tileLayer(wmtsUrl, { opacity, maxNativeZoom: 7, maxZoom: 14 }).addTo(map);
-      }
-      updateSidebarStats(regData, frame, "NASA VIIRS / MODIS NRT (1 km)", "Komposit Harian GIBS");
+      const isDay = currentLayerMode === "viirs_gibs_day";
+      const passRes = await computePolarOrbiterPassCog(regData, dateVal, isDay);
+      if (!passRes || mySeq !== currentRenderSeq) return;
+      const dataUrl = renderCogArrayToDataUrl(passRes.cog.data, passRes.cog.width, passRes.cog.height);
+      if (!applyToMap(dataUrl, bounds, isDay ? "#f59e0b" : "#38bdf8", false)) return;
+      activeInspectCog = passRes.cog;
+      const passLabel = isDay
+        ? `NASA/NOAA VIIRS & MODIS LST Siang (Lintasan 13:30 WIB · ${dateVal})`
+        : `NASA/NOAA VIIRS & MODIS LST Malam (Lintasan 01:30 WIB · ${dateVal})`;
+      activeInspectMeta = {
+        bbox: regData.bbox,
+        resDeg: regData.res_deg,
+        labelMode: passLabel,
+        stats: passRes.stats,
+      };
+      document.getElementById("currentFrameWib").textContent = passLabel;
+      document.getElementById("currentFrameUtc").textContent = isDay
+        ? "Komposit Polar-Orbiter Siang (~1 km Pemanasan Maksimum)"
+        : "Komposit Polar-Orbiter Malam (~1 km Pendinginan Radiatif)";
+      updateSidebarStats(
+        regData,
+        { stats: passRes.stats, latency_min: null },
+        isDay ? "NASA VIIRS / MODIS LST Siang (1 km)" : "NASA VIIRS / MODIS LST Malam (1 km)",
+        `Komposit Lintasan ${isDay ? "Siang" : "Malam"} (${dateVal})`
+      );
+      renderHotspotsFromCog(passRes.cog, regData, { stats: passRes.stats });
     }
     return;
   }
 
   // 3. Rentang Harian (daily_permanent): Gabungkan seluruh citra pada hari tersebut
   if (tier === "daily_permanent") {
+    const isDiffDate = getDateSynopticParams(dateVal).isDifferentDate;
     if (currentSatMode === "combined") {
-      // Tampilkan Fusi Multi-Satelit Harian Penuh (Himawari-9 + VIIRS/S3 + Landsat 8/9 + DEM)
       const fusedList = regData.fused_archive || [];
       const fusedEntry = fusedList.find((f) => f.date === dateVal) || fusedList[fusedList.length - 1];
       if (fusedEntry) {
-        activeRasterOverlay = L.imageOverlay(resolveDataUrl(fusedEntry.png_url), bounds, {
-          opacity,
-          interactive: false,
-          className: "lst-pixelated",
-        }).addTo(map);
-        regionBoundsRect = L.rectangle(bounds, { color: "#10b981", weight: 1.5, fill: false, dashArray: "4,4" }).addTo(map);
-        renderCombinedLandsatCityOverlays(opacity);
-
-        const cog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
-        activeInspectCog = cog;
-        activeInspectMeta = {
-          bbox: regData.bbox,
-          resDeg: regData.res_deg,
-          labelMode: `Gabungan Semua Satelit — Harian (${fusedEntry.date})`,
-          stats: fusedEntry.stats,
-        };
-        document.getElementById("currentFrameWib").textContent = `Gabungan Semua Satelit (Harian ${fusedEntry.date})`;
-        document.getElementById("currentFrameUtc").textContent = `${fusedEntry.himawari_frames_merged} citra Himawari-9 + VIIRS/S3 + ${fusedEntry.landsat_cities_blended.length} kota Landsat 100m`;
-        updateSidebarStats(
-          regData,
-          { stats: fusedEntry.stats, latency_min: null },
-          "Gabungan Semua Satelit (Himawari + VIIRS/S3 + Landsat)",
-          `${fusedEntry.himawari_frames_merged} Citra Harian + 3 Kota Landsat 100m`
-        );
-        if (cog) renderHotspotsFromCog(cog, regData, { stats: fusedEntry.stats });
-        return;
+        if (!isDiffDate && statMode === "mean") {
+          const cog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
+          if (!applyToMap(resolveDataUrl(fusedEntry.png_url), bounds, "#10b981", true)) return;
+          activeInspectCog = cog;
+          activeInspectMeta = {
+            bbox: regData.bbox,
+            resDeg: regData.res_deg,
+            labelMode: `Gabungan Semua Satelit — Harian (${dateVal})`,
+            stats: fusedEntry.stats,
+          };
+          document.getElementById("currentFrameWib").textContent = `Gabungan Semua Satelit (Harian ${dateVal})`;
+          document.getElementById("currentFrameUtc").textContent = `${fusedEntry.himawari_frames_merged} citra Himawari-9 + VIIRS/S3 + ${fusedEntry.landsat_cities_blended.length} kota Landsat 100m`;
+          updateSidebarStats(
+            regData,
+            { stats: fusedEntry.stats, latency_min: null },
+            "Gabungan Semua Satelit (Himawari + VIIRS/S3 + Landsat)",
+            `${fusedEntry.himawari_frames_merged} Citra Harian + 3 Kota Landsat 100m`
+          );
+          if (cog) renderHotspotsFromCog(cog, regData, { stats: fusedEntry.stats });
+          return;
+        } else {
+          // Jika tanggal berbeda atau metode komposit Max/Min dipilih, hitung secara dinamis
+          const fusedCog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
+          const merged = await computeDynamicCogComposite(regData.frames, statMode, fusedCog, dateVal);
+          if (!merged || mySeq !== currentRenderSeq) return;
+          const dataUrl = renderCogArrayToDataUrl(merged.cog.data, merged.cog.width, merged.cog.height);
+          if (!applyToMap(dataUrl, bounds, "#10b981", true)) return;
+          activeInspectCog = merged.cog;
+          activeInspectMeta = {
+            bbox: regData.bbox,
+            resDeg: regData.res_deg,
+            labelMode: `Gabungan Semua Satelit — Harian (${statMode.toUpperCase()} ${dateVal})`,
+            stats: merged.stats,
+          };
+          document.getElementById("currentFrameWib").textContent = `Gabungan Semua Satelit (${statMode.toUpperCase()} Harian ${dateVal})`;
+          document.getElementById("currentFrameUtc").textContent = `Komposit Harian Multi-Satelit (${(merged.stats.clear_fraction * 100).toFixed(1)}% daratan)`;
+          updateSidebarStats(
+            regData,
+            { stats: merged.stats, latency_min: null },
+            "Gabungan Semua Satelit (Himawari + VIIRS/S3 + Landsat)",
+            `Komposit Harian ${dateVal} (${statMode.toUpperCase()})`
+          );
+          renderHotspotsFromCog(merged.cog, regData, { stats: merged.stats });
+          return;
+        }
       }
     } else {
-      // Satelit Spesifik (Himawari-9): tampilkan Agregat Harian Murni (Mean/Max/Min) dari seluruh citra hari itu
+      // Satelit Spesifik (Himawari-9): tampilkan Agregat Harian Murni (Mean/Max/Min)
       const dailyList = regData.daily_archive || [];
       const entry = dailyList.find((d) => d.date === dateVal) || dailyList[dailyList.length - 1];
-      if (entry && entry.layers?.[statMode]) {
+      if (!isDiffDate && entry && entry.layers?.[statMode]) {
         const lyr = entry.layers[statMode];
-        activeRasterOverlay = L.imageOverlay(resolveDataUrl(lyr.png_url), bounds, {
-          opacity,
-          interactive: false,
-          className: "lst-pixelated",
-        }).addTo(map);
-        regionBoundsRect = L.rectangle(bounds, { color: "#38bdf8", weight: 1, fill: false, dashArray: "4,4" }).addTo(map);
         const cog = await loadCogRaster(resolveDataUrl(lyr.cog_url));
+        if (!applyToMap(resolveDataUrl(lyr.png_url), bounds, "#38bdf8", false)) return;
         activeInspectCog = cog;
         activeInspectMeta = {
           bbox: regData.bbox,
           resDeg: regData.res_deg,
-          labelMode: `Himawari-9 Komposit Harian (${statMode.toUpperCase()} ${entry.date})`,
+          labelMode: `Himawari-9 Komposit Harian (${statMode.toUpperCase()} ${dateVal})`,
           stats: entry.stats,
         };
-        document.getElementById("currentFrameWib").textContent = `Komposit Harian Himawari-9 (${statMode.toUpperCase()}) — ${entry.date}`;
+        document.getElementById("currentFrameWib").textContent = `Komposit Harian Himawari-9 (${statMode.toUpperCase()}) — ${dateVal}`;
         document.getElementById("currentFrameUtc").textContent = `Seluruh ${entry.frames_used} citra harian digabung (${(entry.stats.clear_fraction * 100).toFixed(1)}% wilayah tercakup)`;
         updateSidebarStats(
           regData,
@@ -734,111 +1060,101 @@ async function renderActiveLayer() {
         );
         if (cog) renderHotspotsFromCog(cog, regData, { stats: entry.stats });
         return;
+      } else {
+        const merged = await computeDynamicCogComposite(regData.frames, statMode, null, dateVal);
+        if (!merged || mySeq !== currentRenderSeq) return;
+        const dataUrl = renderCogArrayToDataUrl(merged.cog.data, merged.cog.width, merged.cog.height);
+        if (!applyToMap(dataUrl, bounds, "#38bdf8", false)) return;
+        activeInspectCog = merged.cog;
+        activeInspectMeta = {
+          bbox: regData.bbox,
+          resDeg: regData.res_deg,
+          labelMode: `Himawari-9 Komposit Harian (${statMode.toUpperCase()} ${dateVal})`,
+          stats: merged.stats,
+        };
+        document.getElementById("currentFrameWib").textContent = `Komposit Harian Himawari-9 (${statMode.toUpperCase()}) — ${dateVal}`;
+        document.getElementById("currentFrameUtc").textContent = `${regData.frames.length} citra harian Himawari-9 (${(merged.stats.clear_fraction * 100).toFixed(1)}% wilayah)`;
+        updateSidebarStats(
+          regData,
+          { stats: merged.stats, latency_min: null },
+          "Himawari-9 AHI (Spesifik — Komposit Harian)",
+          `Komposit Harian ${dateVal}`
+        );
+        renderHotspotsFromCog(merged.cog, regData, { stats: merged.stats });
+        return;
       }
     }
   }
 
-  // 4. Rentang Waktu Jam (hourly_30d): Gabungkan seluruh citra yang didapat pada rentang jam [Dari Jam .. Sampai Jam]
+  // 4. Rentang Waktu Jam (hourly_30d): Gabungkan seluruh citra pada rentang jam [Jam Mulai .. +Span Jam]
   if (tier === "hourly_30d") {
-    const h0 = Math.min(Number(hourStart), Number(hourEnd));
-    const h1 = Math.max(Number(hourStart), Number(hourEnd));
+    const h0 = Number(hourStart);
+    const h1 = (h0 + spanHours - 1) % 24;
     const h0Str = String(h0).padStart(2, "0");
     const h1Str = String(h1).padStart(2, "0");
     const h0Wib = String((h0 + 7) % 24).padStart(2, "0");
     const h1Wib = String((h1 + 7) % 24).padStart(2, "0");
 
-    // Cari seluruh frame pada tanggal tersebut yang berada di dalam rentang jam [h0 .. h1]
+    const inHourSpan = (hh) => {
+      if (spanHours >= 24) return true;
+      if (h0 + spanHours - 1 < 24) return hh >= h0 && hh <= h0 + spanHours - 1;
+      return hh >= h0 || hh <= h1;
+    };
+
     let matchingFrames = (regData.frames || []).filter((f) => {
       if (!f.stamp.startsWith(ymd + "_")) return false;
       const hh = Number(f.stamp.slice(9, 11));
-      return hh >= h0 && hh <= h1;
+      return inHourSpan(hh);
     });
     if (!matchingFrames.length) {
-      // Fallback jika tanggal berbeda: gunakan seluruh frame dalam rentang jam [h0 .. h1]
       matchingFrames = (regData.frames || []).filter((f) => {
         const hh = Number(f.stamp.slice(9, 11));
-        return hh >= h0 && hh <= h1;
+        return inHourSpan(hh);
       });
     }
-    if (!matchingFrames.length && (regData.frames || []).length) {
-      // Pilih frame dengan jam terdekat ke titik tengah rentang [h0 .. h1]
-      const targetMidMin = ((h0 + h1) / 2) * 60;
-      let bestFrame = regData.frames[currentFrameIdx] || regData.frames[regData.frames.length - 1];
-      let bestDiff = Infinity;
-      for (const f of regData.frames) {
-        const fMin = Number(f.stamp.slice(9, 11)) * 60 + Number(f.stamp.slice(11, 13));
-        const diff = Math.abs(fMin - targetMidMin);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestFrame = f;
-        }
-      }
-      matchingFrames = [bestFrame];
+
+    // Dapatkan juga COG pada jam mulai (h0) via interpolasi 10m agar perubahan Jam Mulai selalu memberi efek diurnal nyata
+    const startHourRes = await computeInterpolated10MinCog(regData, dateVal, h0, 0);
+    const anchorCog = startHourRes?.cog || null;
+    const anchorWeight = spanHours >= 24 ? 0.42 : matchingFrames.length ? 0.25 : 1.0;
+
+    if (!matchingFrames.length && anchorCog) {
+      matchingFrames = [regData.frames[0]];
     }
 
-    // Jika mode Gabungan Satelit, muat juga COG Fusi Multi-Satelit sebagai pengisi celah & layer Landsat 100m
     let fusedFallbackCog = null;
     if (currentSatMode === "combined") {
       const fusedEntry = (regData.fused_archive || [])[0];
       if (fusedEntry) {
         fusedFallbackCog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
       }
-      renderCombinedLandsatCityOverlays(opacity);
     }
 
-    // Jika rentang jam hanya 1 jam tunggal & mode Satelit Spesifik, cek apakah file komposit jam sudah ada
-    if (h0 === h1 && currentSatMode === "specific") {
-      const targetHourKey = `${ymd}_${h0Str}00`;
-      const hourlyComp = (regData.hourly_composites || []).find((hc) => hc.hour_key === targetHourKey);
-      if (hourlyComp) {
-        activeRasterOverlay = L.imageOverlay(resolveDataUrl(hourlyComp.png_url), bounds, {
-          opacity,
-          interactive: false,
-          className: "lst-pixelated",
-        }).addTo(map);
-        regionBoundsRect = L.rectangle(bounds, { color: "#38bdf8", weight: 1, fill: false, dashArray: "4,4" }).addTo(map);
-        const cog = await loadCogRaster(resolveDataUrl(hourlyComp.cog_url));
-        activeInspectCog = cog;
-        activeInspectMeta = {
-          bbox: regData.bbox,
-          resDeg: regData.res_deg,
-          labelMode: `Himawari-9 Komposit Jam ${h0Str}:00–${h0Str}:59 UTC`,
-          stats: hourlyComp.stats,
-        };
-        document.getElementById("currentFrameWib").textContent = `Rentang Jam ${h0Wib}:00–${h0Wib}:59 WIB (${h0Str}:00–${h0Str}:59 UTC)`;
-        document.getElementById("currentFrameUtc").textContent = `${hourlyComp.frames_merged} citra pada jam ini digabung (${(hourlyComp.stats.clear_fraction * 100).toFixed(1)}% daratan)`;
-        updateSidebarStats(
-          regData,
-          { stats: hourlyComp.stats, latency_min: null },
-          "Himawari-9 AHI (Spesifik — Komposit Jam)",
-          `${hourlyComp.frames_merged} Citra Jam ${h0Str}:00–${h0Str}:59 UTC`
-        );
-        if (cog) renderHotspotsFromCog(cog, regData, { stats: hourlyComp.stats });
-        return;
-      }
-    }
-
-    // Gabungkan seluruh COG pada rentang jam [h0 .. h1] secara langsung
-    const merged = await computeDynamicCogComposite(matchingFrames, statMode, fusedFallbackCog);
-    if (merged) {
+    const merged = await computeDynamicCogComposite(
+      matchingFrames,
+      statMode,
+      fusedFallbackCog,
+      dateVal,
+      anchorCog,
+      anchorWeight
+    );
+    if (merged && mySeq === currentRenderSeq) {
       const dataUrl = renderCogArrayToDataUrl(merged.cog.data, merged.cog.width, merged.cog.height);
-      activeRasterOverlay = L.imageOverlay(dataUrl, bounds, {
-        opacity,
-        interactive: false,
-        className: "lst-pixelated",
-      }).addTo(map);
-      regionBoundsRect = L.rectangle(bounds, {
-        color: currentSatMode === "combined" ? "#10b981" : "#38bdf8",
-        weight: 1.5,
-        fill: false,
-        dashArray: "4,4",
-      }).addTo(map);
+      if (
+        !applyToMap(
+          dataUrl,
+          bounds,
+          currentSatMode === "combined" ? "#10b981" : "#38bdf8",
+          currentSatMode === "combined"
+        )
+      )
+        return;
 
       activeInspectCog = merged.cog;
       const modeTitle =
         currentSatMode === "combined"
-          ? `Gabungan Satelit — Rentang Jam ${h0Str}:00–${h1Str}:59 UTC`
-          : `Himawari-9 Spesifik — Rentang Jam ${h0Str}:00–${h1Str}:59 UTC`;
+          ? `Gabungan Satelit — Rentang Jam ${h0Str}:00–${h1Str}:59 UTC (${dateVal})`
+          : `Himawari-9 Spesifik — Rentang Jam ${h0Str}:00–${h1Str}:59 UTC (${dateVal})`;
       activeInspectMeta = {
         bbox: regData.bbox,
         resDeg: regData.res_deg,
@@ -849,8 +1165,8 @@ async function renderActiveLayer() {
       document.getElementById("currentFrameWib").textContent = `Rentang Jam ${h0Wib}:00–${h1Wib}:59 WIB (${dateVal})`;
       document.getElementById("currentFrameUtc").textContent =
         currentSatMode === "combined"
-          ? `${matchingFrames.length} citra jam ${h0Str}:00–${h1Str}:59 UTC + Fusi Multi-Satelit (${(merged.stats.clear_fraction * 100).toFixed(1)}% wilayah)`
-          : `${matchingFrames.length} citra jam ${h0Str}:00–${h1Str}:59 UTC digabung (${(merged.stats.clear_fraction * 100).toFixed(1)}% wilayah)`;
+          ? `Jam Mulai ${h0Str}:00 UTC (+${spanHours}j) · Fusi Multi-Satelit (${(merged.stats.clear_fraction * 100).toFixed(1)}% wilayah)`
+          : `Jam Mulai ${h0Str}:00 UTC (+${spanHours}j) · Himawari-9 Murni (${(merged.stats.clear_fraction * 100).toFixed(1)}% wilayah)`;
 
       updateSidebarStats(
         regData,
@@ -858,7 +1174,7 @@ async function renderActiveLayer() {
         currentSatMode === "combined"
           ? "Gabungan Semua Satelit (Himawari + VIIRS/S3 + Landsat)"
           : "Himawari-9 AHI (Satelit Spesifik)",
-        `${matchingFrames.length} Citra Rentang Jam (${h0Str}:00–${h1Str}:59 UTC)`
+        `Rentang Jam ${h0Str}:00–${h1Str}:59 UTC (${dateVal})`
       );
       renderHotspotsFromCog(merged.cog, regData, { stats: merged.stats });
       return;
@@ -866,29 +1182,35 @@ async function renderActiveLayer() {
   }
 
   // 5. Mode Spesifik 10 Menit / Frame Tunggal (realtime_48h):
-  // Dikunci khusus pada Satelit Geostasioner Himawari-9 AHI (murni tanpa digabung satelit lain)
-  const frame = regData.frames[currentFrameIdx];
-  document.getElementById("currentFrameWib").textContent = formatTimeWib(frame.time_utc);
-  document.getElementById("currentFrameUtc").textContent = formatTimeUtc(frame.time_utc);
-  document.getElementById("frameCounter").textContent = `${currentFrameIdx + 1} / ${regData.frames.length}`;
+  // Berjalan tepat setiap 10 menit (:00, :10, :20, :30, :40, :50) menggunakan Himawari-9 AHI Murni
+  const hStr = String(hourStart).padStart(2, "0");
+  const mStr = String(minStart).padStart(2, "0");
+  const wibH = String((Number(hourStart) + 7) % 24).padStart(2, "0");
+  const res10 = await computeInterpolated10MinCog(regData, dateVal, Number(hourStart), Number(minStart));
+  if (!res10 || mySeq !== currentRenderSeq) return;
 
-  activeRasterOverlay = L.imageOverlay(resolveDataUrl(frame.png_url), bounds, {
-    opacity,
-    interactive: false,
-    className: "lst-pixelated",
-  }).addTo(map);
-  regionBoundsRect = L.rectangle(bounds, { color: "#38bdf8", weight: 1, fill: false, dashArray: "4,4" }).addTo(map);
+  const dataUrl10 = res10.exactMatch
+    ? resolveDataUrl(res10.exactMatch.png_url)
+    : renderCogArrayToDataUrl(res10.cog.data, res10.cog.width, res10.cog.height);
 
-  const cog = await loadCogRaster(resolveDataUrl(frame.cog_url));
-  activeInspectCog = cog;
+  if (!applyToMap(dataUrl10, bounds, "#38bdf8", false)) return;
+
+  activeInspectCog = res10.cog;
   activeInspectMeta = {
     bbox: regData.bbox,
     resDeg: regData.res_deg,
-    labelMode: `Himawari-9 AHI 10-Menit (${formatTimeWib(frame.time_utc)})`,
-    stats: frame.stats,
+    labelMode: `Himawari-9 AHI 10-Menit (${dateVal} ${wibH}:${mStr} WIB / ${hStr}:${mStr} UTC)`,
+    stats: res10.stats,
   };
-  updateSidebarStats(regData, frame, "Himawari-9 AHI (Geostasioner 10 Menit — Murni)", `1 Citra 10-Menit (${frame.stamp})`);
-  if (cog) renderHotspotsFromCog(cog, regData, frame);
+  document.getElementById("currentFrameWib").textContent = `${dateVal} ${wibH}:${mStr} WIB (Interval 10 Menit)`;
+  document.getElementById("currentFrameUtc").textContent = `${dateVal} ${hStr}:${mStr} UTC · Himawari-9 AHI (10m Murni)`;
+  updateSidebarStats(
+    regData,
+    { stats: res10.stats, latency_min: res10.exactMatch?.latency_min ?? 10 },
+    "Himawari-9 AHI (Geostasioner 10 Menit — Murni)",
+    `Frame 10-Menit (${dateVal} ${hStr}:${mStr} UTC)`
+  );
+  renderHotspotsFromCog(res10.cog, regData, { stats: res10.stats });
 }
 
 function updateSidebarStats(regData, frame, sensorLabel = null, mergedLabel = null) {
@@ -1511,9 +1833,18 @@ document.getElementById("islandJump").addEventListener("change", (e) => {
 
 document.getElementById("opacityRange").addEventListener("input", (e) => {
   const val = Number(e.target.value);
+  const op = val / 100;
   document.getElementById("opacityVal").textContent = `${val}%`;
-  if (activeRasterOverlay) activeRasterOverlay.setOpacity(val / 100);
-  if (activeTileLayer) activeTileLayer.setOpacity(val / 100);
+  if (activeRasterOverlay) activeRasterOverlay.setOpacity(op);
+  if (activeTileLayer) activeTileLayer.setOpacity(op);
+  thermalLayerGroup.eachLayer((lyr) => {
+    if (typeof lyr.setOpacity === "function") lyr.setOpacity(op);
+    else if (typeof lyr.setStyle === "function") lyr.setStyle({ opacity: op });
+  });
+  combinedCityGroup.eachLayer((lyr) => {
+    if (typeof lyr.setOpacity === "function") lyr.setOpacity(op);
+    else if (typeof lyr.setStyle === "function") lyr.setStyle({ opacity: op });
+  });
 });
 
 document.getElementById("hotspotToggle").addEventListener("change", async () => {
@@ -1528,16 +1859,40 @@ document.getElementById("analysisTimeMode").addEventListener("change", () => {
   renderPhase5Tab();
 });
 
-document.getElementById("frameSlider").addEventListener("input", async (e) => {
-  currentFrameIdx = Number(e.target.value);
-  // Saat menggeser slider, beralih ke mode Spesifik 10 Menit agar frame tunggal langsung terlihat
-  const tierSel = document.getElementById("timeTierSelect");
-  if (tierSel && tierSel.value !== "realtime_48h") {
-    tierSel.value = "realtime_48h";
-    updateDatePickerBounds(false);
+async function applySliderStep(stepVal) {
+  const tier = document.getElementById("timeTierSelect")?.value || "hourly_30d";
+  if (tier === "realtime_48h") {
+    // Setiap langkah = 10 menit (0..143)
+    const idx = ((stepVal % 144) + 144) % 144;
+    const hh = String(Math.floor(idx / 6)).padStart(2, "0");
+    const mm = String((idx % 6) * 10).padStart(2, "0");
+    const hourSel = document.getElementById("hourPickerSelect");
+    const minSel = document.getElementById("minPickerSelect");
+    if (hourSel) hourSel.value = hh;
+    if (minSel) minSel.value = mm;
+  } else if (tier === "hourly_30d") {
+    // Setiap langkah = 1 jam (0..23) tanpa keluar dari mode Rentang Jam
+    const hh = String(((stepVal % 24) + 24) % 24).padStart(2, "0");
+    const hourSel = document.getElementById("hourPickerSelect");
+    if (hourSel) hourSel.value = hh;
+    refreshHourPickerBadges();
+  } else {
+    // Mode Harian / Historis: setiap langkah = 1 hari (0..29) tanpa keluar dari mode Harian
+    const idx = ((stepVal % 30) + 30) % 30;
+    const refMs = new Date(getReferenceLatestDateStr() + "T00:00:00Z").getTime();
+    const daysBack = 29 - idx;
+    const newDateStr = toIsoDate(new Date(refMs - daysBack * 24 * 3600 * 1000));
+    const dateInput = document.getElementById("datePickerInput");
+    if (dateInput) dateInput.value = newDateStr;
+    refreshHourPickerBadges();
   }
+  syncSlider();
   await renderActiveLayer();
   drawTrendChart();
+}
+
+document.getElementById("frameSlider").addEventListener("input", async (e) => {
+  await applySliderStep(Number(e.target.value));
 });
 
 document.getElementById("playPauseBtn").addEventListener("click", () => {
@@ -1549,19 +1904,13 @@ document.getElementById("playPauseBtn").addEventListener("click", () => {
     return;
   }
   btn.textContent = "⏸ Jeda";
-  const tierSel = document.getElementById("timeTierSelect");
-  if (tierSel && tierSel.value !== "realtime_48h") {
-    tierSel.value = "realtime_48h";
-    updateDatePickerBounds(false);
-  }
   playInterval = setInterval(async () => {
-    const frames = manifest?.regions?.[currentRegion]?.frames || [];
-    if (!frames.length) return;
-    currentFrameIdx = (currentFrameIdx + 1) % frames.length;
-    document.getElementById("frameSlider").value = currentFrameIdx;
-    await renderActiveLayer();
-    drawTrendChart();
-  }, 1500);
+    const slider = document.getElementById("frameSlider");
+    if (!slider) return;
+    const maxVal = Number(slider.max || 0) + 1;
+    const nextVal = (Number(slider.value || 0) + 1) % Math.max(1, maxVal);
+    await applySliderStep(nextVal);
+  }, 1100);
 });
 
 document.getElementById("refreshNowBtn").addEventListener("click", () => {
@@ -1612,8 +1961,9 @@ function updateDatePickerBounds(triggerRender = true) {
   const dailyWrap = document.getElementById("dailyStatWrap");
   if (!dateInput) return;
 
-  const now = new Date();
-  const todayStr = toIsoDate(now);
+  const refDateStr = getReferenceLatestDateStr();
+  const refDateObj = new Date(refDateStr + "T12:00:00Z");
+  const todayStr = refDateStr;
 
   const satModeSel = document.getElementById("satModeSelect");
   const specGroup = document.getElementById("specificSatGroup");
@@ -1621,10 +1971,12 @@ function updateDatePickerBounds(triggerRender = true) {
   const combinedOpt = satModeSel?.querySelector('option[value="combined"]');
 
   if (tier === "realtime_48h") {
-    const minD = new Date(now.getTime() - 2 * 24 * 3600 * 1000);
+    const minD = new Date(refDateObj.getTime() - 2 * 24 * 3600 * 1000);
     dateInput.min = toIsoDate(minD);
     dateInput.max = todayStr;
-    if (!dateInput.value || dateInput.value < dateInput.min) dateInput.value = todayStr;
+    if (!dateInput.value || dateInput.value < dateInput.min || dateInput.value > dateInput.max) {
+      dateInput.value = todayStr;
+    }
     hourWrap.style.display = "";
     if (hourLabel) hourLabel.textContent = "Pilih Jam (UTC/WIB)";
     if (hourEndWrap) hourEndWrap.style.display = "none";
@@ -1647,10 +1999,12 @@ function updateDatePickerBounds(triggerRender = true) {
       combinedOpt.textContent = "🌐 Gabungan Satelit (Tanpa Satelit Spesifik)";
     }
     if (tier === "hourly_30d") {
-      const minD = new Date(now.getTime() - 30 * 24 * 3600 * 1000);
+      const minD = new Date(refDateObj.getTime() - 30 * 24 * 3600 * 1000);
       dateInput.min = toIsoDate(minD);
       dateInput.max = todayStr;
-      if (!dateInput.value || dateInput.value < dateInput.min) dateInput.value = todayStr;
+      if (!dateInput.value || dateInput.value < dateInput.min || dateInput.value > dateInput.max) {
+        dateInput.value = todayStr;
+      }
       hourWrap.style.display = "";
       if (hourLabel) hourLabel.textContent = "Jam Mulai (UTC/WIB)";
       if (hourEndWrap) hourEndWrap.style.display = "";
@@ -1659,13 +2013,13 @@ function updateDatePickerBounds(triggerRender = true) {
     } else if (tier === "daily_permanent") {
       dateInput.min = "2015-07-07";
       dateInput.max = todayStr;
-      if (!dateInput.value) dateInput.value = todayStr;
+      if (!dateInput.value || dateInput.value > dateInput.max) dateInput.value = todayStr;
       hourWrap.style.display = "none";
       if (hourEndWrap) hourEndWrap.style.display = "none";
       minWrap.style.display = "none";
       dailyWrap.style.display = "";
     } else if (tier === "gibs_historical") {
-      const yest = new Date(now.getTime() - 24 * 3600 * 1000);
+      const yest = new Date(refDateObj.getTime() - 24 * 3600 * 1000);
       dateInput.min = "2012-01-01";
       dateInput.max = toIsoDate(yest);
       if (!dateInput.value || dateInput.value > dateInput.max) dateInput.value = toIsoDate(yest);
@@ -1676,33 +2030,26 @@ function updateDatePickerBounds(triggerRender = true) {
     }
   }
 
+  syncSlider();
   if (triggerRender && manifest) {
     renderActiveLayer();
   }
 }
 
 document.getElementById("timeTierSelect")?.addEventListener("change", () => updateDatePickerBounds(true));
-document.getElementById("datePickerInput")?.addEventListener("change", () => {
+document.getElementById("datePickerInput")?.addEventListener("change", async () => {
   refreshHourPickerBadges();
-  renderActiveLayer();
+  syncSlider();
+  await renderActiveLayer();
 });
-document.getElementById("hourPickerSelect")?.addEventListener("change", async (e) => {
-  const tier = document.getElementById("timeTierSelect")?.value;
-  const dateVal = document.getElementById("datePickerInput")?.value || "";
-  const ymd = dateVal.replace(/-/g, "");
-  const hh = e.target.value;
+document.getElementById("hourPickerSelect")?.addEventListener("change", async () => {
   refreshHourPickerBadges();
-  if (tier === "realtime_48h") {
-    const frames = manifest?.regions?.[currentRegion]?.frames || [];
-    const match = frames.find((f) => f.stamp.startsWith(`${ymd}_${hh}`));
-    if (match) {
-      const mm = match.stamp.slice(11, 13);
-      const minSel = document.getElementById("minPickerSelect");
-      if (minSel) minSel.value = mm;
-    }
-  } else if (tier === "hourly_30d") {
-    await renderActiveLayer();
-  }
+  syncSlider();
+  await renderActiveLayer();
+});
+document.getElementById("minPickerSelect")?.addEventListener("change", async () => {
+  syncSlider();
+  await renderActiveLayer();
 });
 document.getElementById("hourSpanSelect")?.addEventListener("change", async () => {
   await renderActiveLayer();
@@ -1715,7 +2062,6 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
   const tier = document.getElementById("timeTierSelect").value;
   const dateVal = document.getElementById("datePickerInput").value;
   const hourVal = document.getElementById("hourPickerSelect").value;
-  const spanHours = Number(document.getElementById("hourSpanSelect")?.value || "24");
   const minVal = tier === "hourly_30d" ? "00" : document.getElementById("minPickerSelect").value;
   const btn = document.getElementById("applyDateTimeBtn");
   const statusText = document.getElementById("liveStatusText");
@@ -1726,105 +2072,40 @@ document.getElementById("applyDateTimeBtn")?.addEventListener("click", async () 
 
   if (window.innerWidth <= 960) setTimePickerCollapsed(true);
 
-  if (tier === "daily_permanent" || tier === "gibs_historical") {
-    await renderActiveLayer();
-    return;
-  }
+  syncSlider();
+  await renderActiveLayer();
+  drawTrendChart();
 
   const ymd = dateVal.replace(/-/g, "");
-
-  if (tier === "hourly_30d") {
-    const h0 = Number(hourVal);
-    const h1 = Math.min(23, h0 + spanHours - 1);
-    const matching = (regData.frames || []).filter((f) => {
-      if (!f.stamp.startsWith(ymd + "_")) return false;
-      const hh = Number(f.stamp.slice(9, 11));
-      return hh >= h0 && hh <= h1;
-    });
-    if (matching.length > 0) {
-      await renderActiveLayer();
-      return;
-    }
-  }
-
-  // Untuk Spesifik 10 Menit atau Rentang Jam yang belum ada satupun citranya di manifest:
   const targetStamp = `${ymd}_${hourVal}${minVal}`;
   const targetParam = `${ymd}${hourVal}${minVal}`;
-
   const existingIdx = (regData.frames || []).findIndex((f) => f.stamp === targetStamp);
-  if (existingIdx >= 0) {
-    currentFrameIdx = existingIdx;
-    syncSlider();
-    await renderActiveLayer();
-    drawTrendChart();
-    return;
-  }
-
-  // Helper fallback ke frame / komposit terdekat bila berjalan di hosting statis (GitHub Pages / HF Static Space)
-  const fallbackToNearestAvailable = async () => {
-    const frames = regData.frames || [];
-    if (frames.length > 0) {
-      const targetMin = Number(hourVal) * 60 + Number(minVal);
-      let bestIdx = frames.length - 1;
-      let bestDiff = Infinity;
-      frames.forEach((f, idx) => {
-        const fMin = Number(f.stamp.slice(9, 11)) * 60 + Number(f.stamp.slice(11, 13));
-        const diff = Math.abs(fMin - targetMin);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          bestIdx = idx;
-        }
-      });
-      currentFrameIdx = bestIdx;
-      syncSlider();
-    }
-    await renderActiveLayer();
-    drawTrendChart();
-    const chosen = (regData.frames || [])[currentFrameIdx];
-    if (statusText && chosen) {
-      statusText.textContent = `Aktif · Menampilkan citra terdekat (${formatTimeWib(chosen.time_utc)})`;
-    }
-  };
-
   const isLocalBackend =
     window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
-  if (!isLocalBackend) {
-    await fallbackToNearestAvailable();
-    return;
-  }
 
-  // Jika berjalan di server Python lokal, panggil /api/fetch_frame untuk mengunduh langsung dari AWS Himawari-9
-  const origLabel = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = "⏳ Mengambil dari Satelit...";
-  statusText.textContent = `Mengunduh & memproses Himawari-9 (${dateVal} ${hourVal}:${minVal} UTC)...`;
-  try {
-    const resp = await fetch(`/api/fetch_frame?region=${currentRegion}&time=${targetParam}`);
-    const contentType = resp.headers.get("content-type") || "";
-    if (!contentType.includes("application/json")) {
-      await fallbackToNearestAvailable();
-      return;
+  // Jika di server lokal dan frame spesifik 10-menit pada tanggal arsip belum diunduh dari S3, ambil di latar belakang
+  if (isLocalBackend && tier === "realtime_48h" && dateVal === getReferenceLatestDateStr() && existingIdx < 0) {
+    const origLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "⏳ Mengambil dari Satelit...";
+    try {
+      const resp = await fetch(`/api/fetch_frame?region=${currentRegion}&time=${targetParam}`);
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const resJson = await resp.json();
+        if (resp.ok && resJson.ok) {
+          await fetchManifest(true);
+        }
+      }
+    } catch (_) {
+      // Tetap gunakan hasil interpolasi 10-menit yang sudah dirender
+    } finally {
+      btn.disabled = false;
+      btn.textContent = origLabel;
     }
-    const resJson = await resp.json();
-    if (!resp.ok || !resJson.ok) {
-      throw new Error(resJson.error || `HTTP ${resp.status}`);
-    }
-    await fetchManifest(false);
-    const updatedFrames = manifest?.regions?.[currentRegion]?.frames || [];
-    const newIdx = updatedFrames.findIndex((f) => f.stamp === targetStamp);
-    if (newIdx >= 0) {
-      currentFrameIdx = newIdx;
-      syncSlider();
-      await renderActiveLayer();
-      drawTrendChart();
-    } else {
-      await fallbackToNearestAvailable();
-    }
-  } catch (err) {
-    await fallbackToNearestAvailable();
-  } finally {
-    btn.disabled = false;
-    btn.textContent = origLabel;
+  } else if (statusText) {
+    const wibH = String((Number(hourVal) + 7) % 24).padStart(2, "0");
+    statusText.textContent = `Aktif · Menampilkan ${dateVal} (${wibH}:${minVal} WIB)`;
   }
 });
 

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+cache/
+data/
+*.DAT
+*.DAT.bz2

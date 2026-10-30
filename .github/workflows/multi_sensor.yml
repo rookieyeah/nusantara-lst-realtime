@@ -1,0 +1,41 @@
+name: Multi-Sensor (VIIRS, Sentinel-3, Landsat UHI) & Analysis Pipeline
+
+on:
+  schedule:
+    # Berjalan otomatis setiap 3 jam untuk pembaruan VIIRS, Sentinel-3, Analisis & Validasi BMKG
+    - cron: "15 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multi-sensor-and-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt huggingface_hub
+
+      - name: Run Multi-Sensor, Hotspot/Anomaly/UHI Analysis & BMKG Validation
+        run: |
+          python -m pipeline.run_all
+
+      - name: Sync to Hugging Face Hub Dataset
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+        run: |
+          python -c "from pipeline.storage import upload_to_hf; upload_to_hf()"

@@ -1,0 +1,36 @@
+{
+  "city_key": "balikpapan_ikn",
+  "name": "Balikpapan & IKN Nusantara (Kalimantan Timur)",
+  "island": "Kalimantan",
+  "bbox": [
+    116.65,
+    -1.35,
+    117.05,
+    -0.85
+  ],
+  "res_deg": 0.001,
+  "scene_id": "LC09_L2SP_116061_20261014_02_T1",
+  "platform": "landsat-9",
+  "datetime": "2026-10-14T02:21:56.875707Z",
+  "scene_cloud_cover_pct": 12.1,
+  "tile_url": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=landsat-c2-l2&item=LC09_L2SP_116061_20261014_02_T1&assets=lwir11&colormap_name=rdylbu_r&rescale=290,322",
+  "cog_url": "landsat/balikpapan_ikn/LST_L89_balikpapan_ikn.tif",
+  "png_url": "landsat/balikpapan_ikn/LST_L89_balikpapan_ikn.png",
+  "stats": {
+    "clear_fraction": 0.248,
+    "min_c": 32.84,
+    "mean_c": 37.5,
+    "max_c": 57.61,
+    "p95_c": 42.76,
+    "urban_mean_c": 39.65,
+    "vegetation_mean_c": 36.64,
+    "uhi_intensity_c": 3.01,
+    "uhi_hot_threshold_c": 41.15,
+    "uhi_hot_pixels": 5251,
+    "mean_ndvi": 0.619
+  },
+  "sizes_mb": {
+    "cog": 0.097,
+    "png": 0.128
+  }
+}

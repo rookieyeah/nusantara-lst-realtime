@@ -1,0 +1,37 @@
+name: Daily Retention Cleanup & Aggregation
+
+on:
+  schedule:
+    # Berjalan setiap hari pukul 17:30 UTC (00:30 WIB)
+    - cron: "30 17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retention-and-squash:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt huggingface_hub
+
+      - name: Aggregate daily LST, clean expired frames & squash HF Git history
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+        run: |
+          python -m pipeline.retention --aggregate-yesterday --squash-hf

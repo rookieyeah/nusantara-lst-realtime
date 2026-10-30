@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nusantara LST — Sistem Pemantauan &amp; Deteksi Suhu Permukaan Bumi (Fase 1–6)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <link rel="stylesheet" href="styles.css?v=pal7" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">LST</div>
+        <div>
+          <h1>Nusantara Thermal &amp; Surface Intelligence</h1>
+          <p class="subtitle">
+            Multi-Tier Near-Realtime LST: Himawari-9 (10m) · VIIRS &amp; Sentinel-3 NRT (&lt;3j) · Landsat 8/9 UHI (30m/100m) · Validasi BMKG
+          </p>
+        </div>
+      </div>
+
+      <div class="topbar-controls">
+        <div class="status-pill" id="liveStatusPill">
+          <span class="pulse-dot"></span>
+          <span id="liveStatusText">Memuat manifest...</span>
+        </div>
+
+        <label class="auto-refresh-toggle" title="Periksa pembaruan otomatis setiap 60 detik">
+          <input type="checkbox" id="autoRefreshChk" checked />
+          <span>Auto-Update (60 dtk)</span>
+        </label>
+
+        <button class="btn btn-outline" id="refreshNowBtn" title="Muat ulang manifest sekarang">
+          ↻ Segarkan
+        </button>
+
+        <button class="btn btn-sidebar-toggle" id="toggleSidebarBtn" title="Sembunyikan atau tampilkan panel detail informasi di sebelah kanan">
+          ◫ Sembunyikan Panel
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="main-layout" id="mainLayout">
+      <!-- Map Section -->
+      <main class="map-section">
+        <!-- Top Controls Toolbar -->
+        <div class="map-overlay-top">
+          <div class="control-group">
+            <label for="basemapSelect">Latar Peta (Basemap)</label>
+            <select id="basemapSelect">
+              <option value="google_hybrid" selected>Google Satelit + Label Indonesia</option>
+              <option value="google_sat">Google Satelit (Murni)</option>
+              <option value="google_streets">Peta Jalan Indonesia (Google Maps)</option>
+              <option value="google_terrain">Peta Topografi / Terrain Indonesia</option>
+              <option value="osm_id">Peta OpenStreetMap Indonesia</option>
+              <option value="esri_sat">Citra Satelit Esri World Imagery</option>
+              <option value="carto_dark">Peta Gelap (Kontras Termal)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="regionSelect">Wilayah Prioritas</label>
+            <select id="regionSelect">
+              <option value="indonesia">Seluruh Indonesia (94.5°–141.5° BT)</option>
+              <option value="kalimantan">Pulau Kalimantan (Fokus Cadangan)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="satModeSelect">Mode Sumber Satelit</label>
+            <select id="satModeSelect">
+              <option value="combined" selected>🌐 Gabungan Satelit (Tanpa Satelit Spesifik)</option>
+              <option value="specific">🛰️ Gunakan Satelit Spesifik</option>
+            </select>
+          </div>
+
+          <div class="control-group" id="specificSatGroup" style="display:none;">
+            <label for="layerModeSelect">Pilih Satelit Spesifik</label>
+            <select id="layerModeSelect">
+              <option value="himawari_lst">Tier 1 — Himawari-9 AHI LST (2 km)</option>
+              <option value="viirs_gibs_day">Tier 2 — NASA VIIRS/MODIS LST Siang (1 km)</option>
+              <option value="viirs_gibs_night">Tier 2 — NASA VIIRS/MODIS LST Malam (1 km)</option>
+              <option value="landsat_uhi_balikpapan_ikn">Tier 3 — Landsat 8/9 100m: Balikpapan &amp; IKN</option>
+              <option value="landsat_uhi_banjarmasin">Tier 3 — Landsat 8/9 100m: Banjarmasin</option>
+              <option value="landsat_uhi_jakarta">Tier 3 — Landsat 8/9 100m: DKI Jakarta</option>
+              <option value="himawari_anomaly">Fase 5 — Peta Anomali Suhu (ΔT °C vs Baseline)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="islandJump">Lompat Cepat Kawasan</label>
+            <select id="islandJump">
+              <option value="">-- Pilih Pulau / Kota Fokus --</option>
+              <option value="-2.5,118.0,5">Seluruh Indonesia</option>
+              <option value="0.5,114.0,6">Pulau Kalimantan</option>
+              <option value="-1.10,116.85,10">Balikpapan &amp; IKN Nusantara</option>
+              <option value="-3.36,114.70,10">Banjarmasin &amp; Banjarbaru</option>
+              <option value="-0.03,109.34,10">Pontianak &amp; Kubu Raya</option>
+              <option value="-6.22,106.85,10">DKI Jakarta &amp; Jabodetabek</option>
+              <option value="-0.5,101.5,6">Pulau Sumatera</option>
+              <option value="-7.2,110.0,7">Pulau Jawa</option>
+              <option value="-2.0,120.5,6">Pulau Sulawesi</option>
+              <option value="-8.6,119.0,7">Bali &amp; Nusa Tenggara</option>
+              <option value="-4.0,136.0,6">Maluku &amp; Papua</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="opacityRange">Opasitas (<span id="opacityVal">85%</span>)</label>
+            <input type="range" id="opacityRange" min="10" max="100" value="85" />
+          </div>
+
+          <div class="control-group checkbox-group">
+            <label title="Tandai piksel suhu ekstrem (LST > rata-rata + 2σ)">
+              <input type="checkbox" id="hotspotToggle" checked />
+              <span>Hotspot (&gt; μ+2σ)</span>
+            </label>
+          </div>
+
+          <div class="control-group checkbox-group">
+            <label title="Tampilkan 18 Stasiun Validasi BMKG/WMO di peta">
+              <input type="checkbox" id="bmkgToggle" checked />
+              <span>Stasiun BMKG (18)</span>
+            </label>
+          </div>
+
+          <div class="control-group checkbox-group">
+            <label title="Tampilkan label nama kota, batas provinsi & jalan Indonesia di atas layer suhu">
+              <input type="checkbox" id="labelsToggle" checked />
+              <span>Label Wilayah di Atas Suhu</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Map Canvas + Legend Wrapper -->
+        <div class="map-canvas-wrap">
+          <div id="map"></div>
+
+          <!-- Floating Edge Handle to Hide/Show Right Sidebar -->
+          <button
+            class="map-sidebar-handle"
+            id="mapSidebarHandle"
+            title="Sembunyikan / Tampilkan Panel Detail Informasi"
+          >
+            <span id="mapSidebarHandleIcon">❯</span>
+            <span class="handle-label" id="mapSidebarHandleLabel">Panel</span>
+          </button>
+
+          <!-- Floating Legend Inside Map Area -->
+          <div class="map-legend" id="mapLegendCard">
+            <div class="legend-header">
+              <div class="legend-title" id="legendTitle">Suhu Permukaan Daratan (°C)</div>
+              <button class="legend-toggle-btn" id="legendCollapseBtn" title="Ciutkan / Bentangkan Legenda">−</button>
+            </div>
+            <div id="legendBody">
+              <div class="legend-gradient" id="legendGradient"></div>
+              <div class="legend-labels" id="legendLabels">
+                <span style="left:0%">15°C</span>
+                <span style="left:20%">23°C</span>
+                <span style="left:30%">27°C</span>
+                <span style="left:40%">31°C</span>
+                <span style="left:60%">39°C</span>
+                <span style="left:80%">47°C</span>
+                <span style="left:100%">55°C</span>
+              </div>
+              <div class="legend-note" id="legendNote">
+                Laut &amp; awan di-mask (transparan) · Klik peta untuk inspeksi piksel COG (0,01°C)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Time & Date-Range Bar -->
+        <div class="time-bar">
+          <!-- Baris Atas: Pemilih Mode Rentang Waktu, Tanggal & Jam -->
+          <div class="datetime-picker-row">
+            <div class="dt-group">
+              <label for="timeTierSelect">Rentang Waktu Pengambilan Citra</label>
+              <select id="timeTierSelect">
+                <option value="hourly_30d" selected>1. Rentang Jam — Gabung Seluruh Citra Jam Ini (Batas: 30 Hari)</option>
+                <option value="daily_permanent">2. Rentang Harian — Gabung Seluruh Citra Harian (Permanen)</option>
+                <option value="realtime_48h">3. Spesifik 10 Menit / Frame Tunggal (Batas: 48 Jam)</option>
+                <option value="gibs_historical">4. Arsip Historis NASA GIBS 1km (2012 – Sekarang)</option>
+              </select>
+            </div>
+
+            <div class="dt-group">
+              <label for="datePickerInput" id="datePickerLabel">Pilih Tanggal (WIB/UTC)</label>
+              <input type="date" id="datePickerInput" />
+            </div>
+
+            <div class="dt-group" id="hourPickerWrap">
+              <label for="hourPickerSelect" id="hourPickerLabel">Jam Mulai (UTC / WIB)</label>
+              <select id="hourPickerSelect"></select>
+            </div>
+
+            <div class="dt-group" id="hourEndPickerWrap">
+              <label for="hourSpanSelect">Rentang Jam Ke Depan</label>
+              <select id="hourSpanSelect">
+                <option value="1">1 Jam Ini Saja (:00 s.d. :59)</option>
+                <option value="2">+2 Jam Ke Depan</option>
+                <option value="3">+3 Jam Ke Depan</option>
+                <option value="6">+6 Jam Ke Depan</option>
+                <option value="12">+12 Jam Ke Depan</option>
+                <option value="24" selected>+24 Jam Ke Depan (Sehari Penuh)</option>
+              </select>
+            </div>
+
+            <div class="dt-group" id="minPickerWrap" style="display:none;">
+              <label for="minPickerSelect">Menit</label>
+              <select id="minPickerSelect">
+                <option value="00">:00</option>
+                <option value="10">:10</option>
+                <option value="20">:20</option>
+                <option value="30">:30</option>
+                <option value="40">:40</option>
+                <option value="50">:50</option>
+              </select>
+            </div>
+
+            <div class="dt-group" id="dailyStatWrap" style="display:none;">
+              <label for="dailyStatSelect">Metode Komposit</label>
+              <select id="dailyStatSelect">
+                <option value="mean" selected>Rata-rata Seluruh Citra (Composite Mean)</option>
+                <option value="max">Maksimum Siang (Composite Max)</option>
+                <option value="min">Minimum Malam (Composite Min)</option>
+              </select>
+            </div>
+
+            <button class="btn btn-primary" id="applyDateTimeBtn" title="Gabungkan & tampilkan seluruh citra pada rentang waktu yang dipilih">
+              ⚡ Tampilkan Rentang Ini
+            </button>
+          </div>
+
+          <!-- Baris Bawah: Time Slider & Animasi Frame Tersedia -->
+          <div class="slider-row">
+            <button class="btn btn-outline" id="playPauseBtn" title="Putar animasi antar-frame">
+              ▶ Putar
+            </button>
+
+            <div class="time-slider-wrap">
+              <div class="time-labels">
+                <span id="currentFrameWib" class="time-primary">--</span>
+                <span id="currentFrameUtc" class="time-secondary">--</span>
+              </div>
+              <input type="range" id="frameSlider" min="0" max="0" value="0" step="1" />
+            </div>
+
+            <div class="frame-counter" id="frameCounter">0 / 0</div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar with 4 Tabs covering Phases 1 to 6 -->
+      <aside class="sidebar">
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+          <button class="tab-btn active" data-tab="tab-overview">1. Ikhtisar</button>
+          <button class="tab-btn" data-tab="tab-hotspot">2. Hotspot &amp; Zona</button>
+          <button class="tab-btn" data-tab="tab-multisensor">3. Satelit &amp; UHI</button>
+          <button class="tab-btn" data-tab="tab-validation">4. Validasi BMKG</button>
+        </nav>
+
+        <!-- TAB 1: Overview & Pixel Inspector -->
+        <div class="tab-pane active" id="tab-overview">
+          <section class="panel-card inspector-card">
+            <div class="card-header">
+              <h2>Inspeksi Piksel (COG Int16)</h2>
+              <span class="badge" id="cogStatusBadge">Siap</span>
+            </div>
+            <div id="pixelInspectorContent" class="inspector-body">
+              <p class="muted-hint">
+                Klik pada daratan di peta untuk membaca nilai suhu permukaan presisi 0,01°C langsung dari Cloud Optimized GeoTIFF.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Statistik Frame Aktif</h2>
+              <span class="badge badge-accent" id="latencyBadge">-- mnt</span>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-box">
+                <span class="stat-label">Rata-rata (Mean)</span>
+                <span class="stat-value" id="statMean">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Maksimum</span>
+                <span class="stat-value stat-hot" id="statMax">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Minimum</span>
+                <span class="stat-value stat-cool" id="statMin">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Persentil 95 (P95)</span>
+                <span class="stat-value" id="statP95">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Langit Cerah</span>
+                <span class="stat-value" id="statClear">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Ambang Hotspot (μ+2σ)</span>
+                <span class="stat-value stat-warn" id="statHotspotThr">--</span>
+              </div>
+            </div>
+
+            <div class="hotspot-summary" id="hotspotSummaryBox">
+              Terdeteksi <strong id="statHotspotCount">0</strong> piksel anomali panas (&gt; μ + 2σ) pada frame ini.
+            </div>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Tren Suhu Antar-Frame</h2>
+              <span class="badge">Min / Mean / Max</span>
+            </div>
+            <canvas id="trendCanvas" width="360" height="145"></canvas>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Parameter Sensor &amp; Kebijakan Retensi</h2>
+            </div>
+            <div class="meta-list">
+              <div class="meta-row"><span>Mode / Sensor Aktif:</span><strong id="metaSensorName">Gabungan Semua Satelit (Fusi Multi-Sensor)</strong></div>
+              <div class="meta-row"><span>Resolusi Grid:</span><strong id="metaRes">0.02° (~2.2 km) + 100m Kota</strong></div>
+              <div class="meta-row"><span>Citra Digabung:</span><strong id="metaSize">--</strong></div>
+              <div class="meta-row"><span>Cakupan Wilayah:</span><strong id="metaCloudTests">--</strong></div>
+            </div>
+            <div class="retention-box">
+              <div class="retention-title">Masa Simpan Bertingkat (Hugging Face Hub)</div>
+              <ul>
+                <li><strong>Frame 10 menit:</strong> 48 jam (+ squash Git harian)</li>
+                <li><strong>Frame per jam:</strong> 30 hari (baseline anomali)</li>
+                <li><strong>Agregat Harian, Bulanan &amp; UHI:</strong> Permanen</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+
+        <!-- TAB 2: Hotspot Clusters & Zonal/Provincial Statistics (Fase 5) -->
+        <div class="tab-pane" id="tab-hotspot">
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Mode Analisis Deteksi (Fase 5)</h2>
+              <select id="analysisTimeMode" class="mini-select">
+                <option value="peak_day">Puncak Siang (12:00 WIB)</option>
+                <option value="latest">Frame Terbaru (Malam)</option>
+              </select>
+            </div>
+            <p class="muted-hint">
+              Klik pada baris provinsi atau klaster hotspot di bawah untuk memfokuskan peta ke lokasi tersebut.
+            </p>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Peringkat Suhu Kawasan &amp; Provinsi</h2>
+              <span class="badge badge-accent" id="zoneCountBadge">11 Zona</span>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table" id="zonalTable">
+                <thead>
+                  <tr>
+                    <th>Kawasan / Provinsi</th>
+                    <th>Mean</th>
+                    <th>Maks</th>
+                    <th>Hotspot</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Klaster Hotspot Spasial (&gt; μ+2σ)</h2>
+              <span class="badge" id="clusterCountBadge">0 Klaster</span>
+            </div>
+            <div class="table-scroll">
+              <table class="data-table" id="clusterTable">
+                <thead>
+                  <tr>
+                    <th>Lokasi / Kawasan</th>
+                    <th>Puncak</th>
+                    <th>Luas</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- TAB 3: Multi-Sensor (Landsat UHI 100m, VIIRS, Sentinel-3) (Fase 4 & 5) -->
+        <div class="tab-pane" id="tab-multisensor">
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Analisis Urban Heat Island (Landsat 100m)</h2>
+              <span class="badge badge-accent">Tier 3</span>
+            </div>
+            <p class="muted-hint" style="margin-bottom:0.5rem;">
+              Ekstraksi langsung kanal termal <code>ST_B10</code> + indeks vegetasi <code>NDVI</code> dari Microsoft Planetary Computer. Klik kartu kota untuk menampilkan layer COG 100m di peta:
+            </p>
+            <div id="uhiCardsContainer" class="stack-list"></div>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Sentinel-3A/B SLSTR NRT (~1 km)</h2>
+              <span class="badge">Copernicus CDSE</span>
+            </div>
+            <p class="muted-hint" style="margin-bottom:0.4rem;">
+              Granule <code>SL_2_LST___</code> terbaru di atas Indonesia &amp; Kalimantan (klik untuk tampilkan jejak lintasan di peta):
+            </p>
+            <div id="sentinel3List" class="stack-list compact-list"></div>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>VIIRS NRT (~750 m) &amp; Landsat 30m</h2>
+              <span class="badge">NASA CMR &amp; STAC</span>
+            </div>
+            <div id="viirsLandsatList" class="stack-list compact-list"></div>
+          </section>
+        </div>
+
+        <!-- TAB 4: BMKG Station Validation & Cross-Calibration (Fase 6) -->
+        <div class="tab-pane" id="tab-validation">
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Akurasi Validasi Stasiun BMKG/WMO</h2>
+              <span class="badge badge-accent" id="valMatchedBadge">--/18 Stasiun</span>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-box">
+                <span class="stat-label">Mean Bias (LST − Ref)</span>
+                <span class="stat-value" id="valBias">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">MAE (Error Absolut)</span>
+                <span class="stat-value stat-warn" id="valMae">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">RMSE</span>
+                <span class="stat-value stat-cool" id="valRmse">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Rekomendasi Koreksi</span>
+                <span class="stat-value" id="valOffset">--</span>
+              </div>
+            </div>
+            <p class="muted-hint" style="margin-top:0.5rem;">
+              Membandingkan LST Himawari-9 terhadap suhu permukaan tanah (0 cm) &amp; udara (2 m) pada 18 Stasiun Meteorologi BMKG (termasuk 6 stasiun Kalimantan).
+            </p>
+          </section>
+
+          <section class="panel-card">
+            <div class="card-header">
+              <h2>Tabel 18 Stasiun Meteorologi BMKG</h2>
+            </div>
+            <div class="table-scroll tall-scroll">
+              <table class="data-table" id="bmkgTable">
+                <thead>
+                  <tr>
+                    <th>Stasiun (Pulau)</th>
+                    <th>LST Sat</th>
+                    <th>Ref BMKG</th>
+                    <th>Selisih</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
+  <script src="app.js?v=pal7"></script>
+</body>
+</html>

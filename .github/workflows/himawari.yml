@@ -1,0 +1,69 @@
+name: Himawari-9 Near-Realtime LST Pipeline
+
+on:
+  schedule:
+    # Berjalan otomatis setiap 15 menit
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "Wilayah (indonesia / kalimantan)"
+        required: false
+        default: "indonesia"
+      time_utc:
+        description: "Waktu frame UTC opsional (YYYYMMDDHHMM)"
+        required: false
+        default: ""
+      backfill_today:
+        description: "Isi otomatis seluruh siklus jam hari ini (true/false)"
+        required: false
+        default: "false"
+
+permissions:
+  contents: read
+
+jobs:
+  process-lst:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Cache static landmask & pyresample LUT
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/
+            cache/resample/
+          key: lst-static-v1-${{ hashFiles('config/settings.yaml') }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt huggingface_hub
+
+      - name: Run Himawari-9 LST pipeline (Indonesia & Kalimantan)
+        run: |
+          if [ "${{ inputs.backfill_today }}" = "true" ]; then
+            python -m pipeline.backfill --step-hours 1
+          elif [ -n "${{ inputs.time_utc }}" ]; then
+            python -m pipeline.run_himawari --region "${{ inputs.region || 'indonesia' }}" --time "${{ inputs.time_utc }}"
+          else
+            python -m pipeline.run_himawari --region indonesia
+            python -m pipeline.run_himawari --region kalimantan
+          fi
+
+      - name: Sync to Hugging Face Hub Dataset
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+        run: |
+          python -c "from pipeline.storage import upload_to_hf; upload_to_hf()"

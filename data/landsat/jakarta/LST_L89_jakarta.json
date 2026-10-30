@@ -1,0 +1,36 @@
+{
+  "city_key": "jakarta",
+  "name": "DKI Jakarta & Jabodetabek (Jawa)",
+  "island": "Jawa",
+  "bbox": [
+    106.68,
+    -6.38,
+    107.02,
+    -6.08
+  ],
+  "res_deg": 0.001,
+  "scene_id": "LC09_L2SP_122064_20261024_02_T1",
+  "platform": "landsat-9",
+  "datetime": "2026-10-24T03:00:11.072392Z",
+  "scene_cloud_cover_pct": 38.8,
+  "tile_url": "https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?collection=landsat-c2-l2&item=LC09_L2SP_122064_20261024_02_T1&assets=lwir11&colormap_name=rdylbu_r&rescale=290,322",
+  "cog_url": "landsat/jakarta/LST_L89_jakarta.tif",
+  "png_url": "landsat/jakarta/LST_L89_jakarta.png",
+  "stats": {
+    "clear_fraction": 0.202,
+    "min_c": 34.17,
+    "mean_c": 38.7,
+    "max_c": 59.42,
+    "p95_c": 42.88,
+    "urban_mean_c": 39.56,
+    "vegetation_mean_c": 35.95,
+    "uhi_intensity_c": 3.61,
+    "uhi_hot_threshold_c": 41.06,
+    "uhi_hot_pixels": 3296,
+    "mean_ndvi": 0.324
+  },
+  "sizes_mb": {
+    "cog": 0.04,
+    "png": 0.051
+  }
+}

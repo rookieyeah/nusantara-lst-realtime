@@ -1,0 +1,9 @@
+numpy>=2.0.0
+scipy>=1.14.0
+rasterio>=1.4.0
+pyproj>=3.7.0
+shapely>=2.0.0
+requests>=2.32.0
+Pillow>=10.4.0
+PyYAML>=6.0.2
+huggingface_hub>=1.0.0

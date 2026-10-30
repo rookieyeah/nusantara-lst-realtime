@@ -1,0 +1,73 @@
+name: Auto-Update Near-Realtime LST (Himawari-9 + Multi-Sensor Fusion)
+
+on:
+  schedule:
+    # Berjalan otomatis setiap 15 menit (24/7) pada GitHub Actions publik (100% Gratis)
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      target_time_utc:
+        description: "Opsional: waktu spesifik YYYYMMDDHHMM (kosongkan untuk frame terbaru)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  update-lst:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch & Process Himawari-9 LST (Indonesia & Kalimantan)
+        env:
+          TARGET_TIME: ${{ github.event.inputs.target_time_utc }}
+        run: |
+          if [ -n "$TARGET_TIME" ]; then
+            python -m pipeline.run_himawari --region indonesia --at "$TARGET_TIME" --keep-raw
+            python -m pipeline.run_himawari --region kalimantan --at "$TARGET_TIME"
+          else
+            python -m pipeline.run_himawari --region indonesia --keep-raw
+            python -m pipeline.run_himawari --region kalimantan
+          fi
+
+      - name: Update Hourly Composites, Daily Aggregates & Multi-Satellite Fusion
+        run: |
+          python -c "
+          from datetime import datetime, timezone
+          from pipeline.processing.fusion import build_hourly_composites, build_multi_sensor_fusion
+          from pipeline.retention import aggregate_day
+          from pipeline.analysis.anomaly import run_region_analysis
+          from pipeline.storage import build_manifest
+          today = datetime.now(timezone.utc).date()
+          for r in ('indonesia', 'kalimantan'):
+              build_hourly_composites(today, r)
+              aggregate_day(today, r)
+              build_multi_sensor_fusion(today, r)
+              run_region_analysis(r)
+          build_manifest()
+          "
+
+      - name: Sync to Hugging Face Hub Dataset & Space (if HF_TOKEN configured)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+          HF_SPACE_ID: ${{ vars.HF_SPACE_ID }}
+        run: |
+          if [ -n "$HF_TOKEN" ]; then
+            python -m pipeline.deploy --hf-token "$HF_TOKEN" --sync-only
+          else
+            echo "HF_TOKEN belum diset; lewati unggah ke Hugging Face Hub."
+          fi

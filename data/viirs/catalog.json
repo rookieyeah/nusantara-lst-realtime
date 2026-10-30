@@ -1,0 +1,221 @@
+{
+  "updated_utc": "2026-10-30T15:24:03+00:00",
+  "source": "NASA/NOAA Suomi-NPP & NOAA-20/21 VIIRS Land Surface Temperature (~750 m)",
+  "gibs_date": "2026-10-29",
+  "gibs_layers": {
+    "viirs_day": {
+      "name": "VIIRS / Terra-Aqua LST Siang (NASA GIBS 1 km)",
+      "wmts_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Aqua_Land_Surface_Temp_Day/default/2026-10-29/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png"
+    },
+    "viirs_night": {
+      "name": "VIIRS / Terra-Aqua LST Malam (NASA GIBS 1 km)",
+      "wmts_url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Aqua_Land_Surface_Temp_Night/default/2026-10-29/GoogleMapsCompatible_Level7/{z}/{y}/{x}.png"
+    }
+  },
+  "granules": {
+    "indonesia": [
+      {
+        "id": "LANCEMODIS:3086776895",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T07:42:00.000Z",
+        "time_end": "2026-10-30T07:48:00.000Z",
+        "updated": "2026-10-30T11:15:25.730Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0742.002.2026303111347.nc"
+      },
+      {
+        "id": "LANCEMODIS:3086772222",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T07:36:00.000Z",
+        "time_end": "2026-10-30T07:42:00.000Z",
+        "updated": "2026-10-30T11:12:27.060Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0736.002.2026303111106.nc"
+      },
+      {
+        "id": "LANCEMODIS:3086710528",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T06:00:00.000Z",
+        "time_end": "2026-10-30T06:06:00.000Z",
+        "updated": "2026-10-30T09:08:45.070Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0600.002.2026303090717.nc"
+      },
+      {
+        "id": "LANCEMODIS:3086673336",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T05:54:00.000Z",
+        "time_end": "2026-10-30T06:00:00.000Z",
+        "updated": "2026-10-30T07:55:07.130Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0554.002.2026303075337.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085931221",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T19:00:00.000Z",
+        "time_end": "2026-10-29T19:06:00.000Z",
+        "updated": "2026-10-29T21:26:28.990Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1900.002.2026302212508.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085931239",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T18:54:00.000Z",
+        "time_end": "2026-10-29T19:00:00.000Z",
+        "updated": "2026-10-29T21:26:39.340Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1854.002.2026302212507.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085885231",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T17:18:00.000Z",
+        "time_end": "2026-10-29T17:24:00.000Z",
+        "updated": "2026-10-29T19:58:28.790Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1718.002.2026302195651.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085885159",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T17:12:00.000Z",
+        "time_end": "2026-10-29T17:18:00.000Z",
+        "updated": "2026-10-29T19:58:18.000Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1712.002.2026302195653.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085839550",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T15:36:00.000Z",
+        "time_end": "2026-10-29T15:42:00.000Z",
+        "updated": "2026-10-29T18:18:24.710Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1536.002.2026302181656.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085839322",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T15:30:00.000Z",
+        "time_end": "2026-10-29T15:36:00.000Z",
+        "updated": "2026-10-29T18:18:14.240Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1530.002.2026302181656.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085487343",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T08:00:00.000Z",
+        "time_end": "2026-10-29T08:06:00.000Z",
+        "updated": "2026-10-29T12:09:52.480Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.0800.002.2026302120627.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085454127",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T07:54:00.000Z",
+        "time_end": "2026-10-29T08:00:00.000Z",
+        "updated": "2026-10-29T11:55:50.480Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.0754.002.2026302115313.nc"
+      }
+    ],
+    "kalimantan": [
+      {
+        "id": "LANCEMODIS:3086710528",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T06:00:00.000Z",
+        "time_end": "2026-10-30T06:06:00.000Z",
+        "updated": "2026-10-30T09:08:45.070Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0600.002.2026303090717.nc"
+      },
+      {
+        "id": "LANCEMODIS:3086673336",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-30T05:54:00.000Z",
+        "time_end": "2026-10-30T06:00:00.000Z",
+        "updated": "2026-10-30T07:55:07.130Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/303/VNP21_NRT.A2026303.0554.002.2026303075337.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085931221",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T19:00:00.000Z",
+        "time_end": "2026-10-29T19:06:00.000Z",
+        "updated": "2026-10-29T21:26:28.990Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1900.002.2026302212508.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085931239",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T18:54:00.000Z",
+        "time_end": "2026-10-29T19:00:00.000Z",
+        "updated": "2026-10-29T21:26:39.340Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1854.002.2026302212507.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085885231",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T17:18:00.000Z",
+        "time_end": "2026-10-29T17:24:00.000Z",
+        "updated": "2026-10-29T19:58:28.790Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1718.002.2026302195651.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085885159",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T17:12:00.000Z",
+        "time_end": "2026-10-29T17:18:00.000Z",
+        "updated": "2026-10-29T19:58:18.000Z",
+        "day_night": "NIGHT",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.1712.002.2026302195653.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085308948",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T06:18:00.000Z",
+        "time_end": "2026-10-29T06:24:00.000Z",
+        "updated": "2026-10-29T10:51:50.840Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.0618.002.2026302104950.nc"
+      },
+      {
+        "id": "LANCEMODIS:3085307775",
+        "product": "VNP21_NRT",
+        "time_start": "2026-10-29T06:12:00.000Z",
+        "time_end": "2026-10-29T06:18:00.000Z",
+        "updated": "2026-10-29T10:51:38.710Z",
+        "day_night": "DAY",
+        "bbox": null,
+        "data_url": "https://nrt3.modaps.eosdis.nasa.gov/api/v2/content/archives/allData/5200/VNP21_NRT/2026/302/VNP21_NRT.A2026302.0612.002.2026302104946.nc"
+      }
+    ]
+  }
+}

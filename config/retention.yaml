@@ -1,0 +1,20 @@
+# Kebijakan masa simpan data (lihat dokumen perencanaan Bagian 9).
+# Satuan: h = jam, d = hari, "permanent" = tidak pernah dihapus.
+
+himawari:
+  realtime_10min: 48h
+  hourly: 30d
+  daily: permanent        # maks siang, min malam, rata-rata
+  monthly: permanent
+
+polar_nrt:                # VIIRS & Sentinel-3
+  daily_mosaic: 30d
+  monthly: permanent
+
+landsat:
+  quarterly_composite_100m: permanent
+  coverage: indonesia     # fallback: kalimantan
+  max_cloud_pct: 60       # per scene; piksel berawan tetap di-mask via QA_PIXEL
+
+stats:
+  hourly_parquet: permanent

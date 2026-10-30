@@ -1,0 +1,34 @@
+name: Daily Tiered Retention & Hugging Face History Squash
+
+on:
+  schedule:
+    # Berjalan setiap hari pukul 00:20 UTC (07:20 WIB)
+    - cron: "20 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  retention-cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Enforce Retention Policy (48h 10-min / 30d Hourly / Permanent Daily) & Squash HF Git
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+        run: |
+          python -m pipeline.retention --aggregate-yesterday --squash-hf

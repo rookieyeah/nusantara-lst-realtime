@@ -1,0 +1,79 @@
+# Konfigurasi utama pipeline LST near-realtime
+# Semua nilai dapat diubah tanpa menyentuh kode.
+
+# Wilayah aktif. Prioritas: indonesia; cadangan: kalimantan.
+active_region: indonesia
+
+regions:
+  indonesia:
+    name: "Seluruh Indonesia"
+    # [lon_min, lat_min, lon_max, lat_max] (derajat, EPSG:4326)
+    bbox: [94.5, -11.5, 141.5, 6.5]
+  kalimantan:
+    name: "Pulau Kalimantan"
+    bbox: [108.5, -4.5, 119.5, 7.5]
+
+himawari:
+  bucket: noaa-himawari9
+  product_prefix: AHI-L1b-FLDK
+  satellite_tag: H09
+  # Kanal split-window: B14 (11.2 um) dan B15 (12.4 um)
+  bands: [B14, B15]
+  # Resolusi grid output (derajat). 0.02 deg ~ 2.2 km
+  grid_resolution_deg: 0.02
+  # Margin baris saat menentukan segmen yang perlu diunduh
+  segment_margin_lines: 20
+  # Berapa jam ke belakang untuk mencari frame terbaru yang lengkap
+  search_back_hours: 3
+
+cloudmask:
+  # Uji suhu dingin awal pada BT14 mentah (K):
+  # Bahkan di pegunungan tropis (2500 m), permukaan cerah memiliki BT14 >= 282 K.
+  bt_cold_threshold_k: 282.5
+  lapse_rate_k_per_m: 0.0055
+  # Uji split-window: ambang (BT11.2 - BT12.4) naik linear terhadap BT11.2
+  btd_min_k: 4.2
+  btd_max_k: 6.0
+  bt_low_k: 283.0
+  bt_high_k: 310.0
+  # Uji keseragaman spasial: std-dev 3x3 BT11.2 di atas nilai ini dianggap tepi awan (K)
+  spatial_std_threshold_k: 1.8
+  # Uji amplop hangat lokal
+  local_cold_enabled: false
+  local_cold_delta_k: 6.0
+  local_window_px: 21
+  # Perlebar mask awan (1 piksel = ~2.2 km)
+  dilate_px: 1
+
+lst:
+  algorithm: generalized_split_window_v0
+  water_vapour_gcm2: 4.5
+  coefficients:
+    c0: -0.268
+    c1: 1.378
+    c2: 0.183
+    c3: 54.30
+    c4: -2.238
+    c5: -129.20
+    c6: 16.40
+  # Validasi fisik LST berbasis elevasi DEM (lapse rate -5.5 C per 1000 m):
+  # Di dataran rendah (<100 m), LST tidak boleh di bawah 22.0 C (malam) atau 24.5 C (siang).
+  # Suhu < 22 C hanya valid apabila berada di dataran tinggi / pegunungan (elevasi >= 350 m).
+  min_sea_level_night_c: 22.0
+  min_sea_level_day_c: 24.5
+  valid_range_c: [14.5, 62.0]
+
+emissivity:
+  # Emisivitas sementara untuk daratan (Fase 6: dari tutupan lahan / NDVI)
+  land_b14: 0.975
+  land_b15: 0.978
+
+output:
+  # Disimpan sebagai int16 dengan skala 0.01 deg C
+  scale: 0.01
+  nodata: -32768
+  # Rentang palet warna untuk pratinjau PNG (deg C)
+  preview_range_c: [15.0, 55.0]
+
+static:
+  natural_earth_land_url: "https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip"

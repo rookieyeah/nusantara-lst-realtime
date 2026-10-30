@@ -97,6 +97,8 @@ def deploy_to_huggingface(
         ignore_patterns=[
             ".venv/**",
             ".venv/*",
+            ".cache/**",
+            ".cache/*",
             "__pycache__/**",
             "*.pyc",
             "data/raw/**",
@@ -106,7 +108,7 @@ def deploy_to_huggingface(
     )
 
     space_host = f"{username}-{space_name}".lower().replace("_", "-")
-    live_web_url = f"https://{space_host}.hf.space/web/index.html"
+    live_web_url = f"https://{space_host}.static.hf.space/web/index.html"
     space_page_url = f"https://huggingface.co/spaces/{space_id}"
 
     log.info("=== DEPLOYMENT HUGGING FACE SELESAI ===")
@@ -169,9 +171,23 @@ def deploy_to_github_api(
     if not base_commit_sha:
         r_ref.raise_for_status()
 
-    # Kumpulkan file proyek untuk diunggah
-    tree_items = []
-    skip_dirs = {".venv", "__pycache__", ".git"}
+    # Kumpulkan file proyek & gunakan Git SHA-1 lokal agar hanya mengunggah blob yang belum ada di branch main
+    import hashlib
+    from concurrent.futures import ThreadPoolExecutor
+
+    r_existing_tree = requests.get(
+        f"https://api.github.com/repos/{full_repo}/git/trees/{base_commit_sha}?recursive=1",
+        headers=headers,
+        timeout=30,
+    )
+    existing_shas: dict[str, str] = {}
+    if r_existing_tree.status_code == 200:
+        for item in r_existing_tree.json().get("tree", []):
+            if item.get("type") == "blob":
+                existing_shas[item["path"]] = item["sha"]
+
+    skip_dirs = {".venv", ".cache", "__pycache__", ".git"}
+    files_to_check = []
     for p in sorted(ROOT.rglob("*")):
         if p.is_dir():
             continue
@@ -180,40 +196,86 @@ def deploy_to_github_api(
             continue
         if rel_parts[:2] == ("data", "raw"):
             continue
+        files_to_check.append(p)
+
+    def _git_blob_sha(data: bytes) -> str:
+        header = f"blob {len(data)}\0".encode("ascii")
+        return hashlib.sha1(header + data).hexdigest()
+
+    tree_items = []
+    to_upload: list[tuple[str, bytes, str]] = []
+    for p in files_to_check:
         rel_posix = p.relative_to(ROOT).as_posix()
         raw_bytes = p.read_bytes()
-        # Buat blob
-        r_blob = requests.post(
-            f"https://api.github.com/repos/{full_repo}/git/blobs",
+        local_sha = _git_blob_sha(raw_bytes)
+        if existing_shas.get(rel_posix) == local_sha:
+            continue
+        to_upload.append((rel_posix, raw_bytes, local_sha))
+
+    def _upload_blob(entry: tuple[str, bytes, str]) -> dict:
+        rel_posix, raw_bytes, _ = entry
+        for attempt in range(4):
+            r_blob = requests.post(
+                f"https://api.github.com/repos/{full_repo}/git/blobs",
+                headers=headers,
+                json={"content": base64.b64encode(raw_bytes).decode("ascii"), "encoding": "base64"},
+                timeout=60,
+            )
+            if r_blob.status_code in (200, 201):
+                return {
+                    "path": rel_posix,
+                    "mode": "100644",
+                    "type": "blob",
+                    "sha": r_blob.json()["sha"],
+                }
+            time.sleep(1.5 * (attempt + 1))
+        r_blob.raise_for_status()
+        return {}
+
+    log.info("Menyiapkan %d file berubah/baru untuk GitHub (%s) ...", len(to_upload), full_repo)
+
+    # Buat Git Tree secara bertahap (maks 200 item per request) agar tidak terkena 502 Bad Gateway.
+    # Coba gunakan local_sha terlebih dahulu (karena blob yang sudah pernah diunggah sudah ada di object store GitHub).
+    current_tree_sha = base_commit_sha
+    chunk_size = 200
+    for i in range(0, len(to_upload), chunk_size):
+        batch = to_upload[i : i + chunk_size]
+        log.info(
+            "Membuat Git Tree batch %d-%d / %d di %s ...",
+            i + 1,
+            i + len(batch),
+            len(to_upload),
+            full_repo,
+        )
+        fast_chunk = [
+            {"path": rel_p, "mode": "100644", "type": "blob", "sha": l_sha}
+            for rel_p, _, l_sha in batch
+        ]
+        r_tree = requests.post(
+            f"https://api.github.com/repos/{full_repo}/git/trees",
             headers=headers,
-            json={"content": base64.b64encode(raw_bytes).decode("ascii"), "encoding": "base64"},
+            json={"base_tree": current_tree_sha, "tree": fast_chunk},
             timeout=60,
         )
-        r_blob.raise_for_status()
-        tree_items.append(
-            {
-                "path": rel_posix,
-                "mode": "100644",
-                "type": "blob",
-                "sha": r_blob.json()["sha"],
-            }
-        )
-
-    log.info("Membuat Git Tree (%d file) di %s ...", len(tree_items), full_repo)
-    r_tree = requests.post(
-        f"https://api.github.com/repos/{full_repo}/git/trees",
-        headers=headers,
-        json={"base_tree": base_commit_sha, "tree": tree_items},
-        timeout=60,
-    )
-    r_tree.raise_for_status()
+        if r_tree.status_code not in (200, 201):
+            log.info("  Mengunggah blob untuk batch %d-%d ...", i + 1, i + len(batch))
+            with ThreadPoolExecutor(max_workers=8) as ex:
+                uploaded_chunk = list(ex.map(_upload_blob, batch))
+            r_tree = requests.post(
+                f"https://api.github.com/repos/{full_repo}/git/trees",
+                headers=headers,
+                json={"base_tree": current_tree_sha, "tree": uploaded_chunk},
+                timeout=60,
+            )
+            r_tree.raise_for_status()
+        current_tree_sha = r_tree.json()["sha"]
 
     r_commit = requests.post(
         f"https://api.github.com/repos/{full_repo}/git/commits",
         headers=headers,
         json={
             "message": f"Deploy Nusantara LST Fase 1-6 ({datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC})",
-            "tree": r_tree.json()["sha"],
+            "tree": current_tree_sha,
             "parents": [base_commit_sha],
         },
         timeout=30,
@@ -228,11 +290,23 @@ def deploy_to_github_api(
         timeout=20,
     ).raise_for_status()
 
-    # Aktifkan GitHub Pages (build_type: workflow)
-    requests.post(
+    # Aktifkan GitHub Pages (branch main /) & picu build halaman
+    r_pg = requests.post(
         f"https://api.github.com/repos/{full_repo}/pages",
         headers=headers,
-        json={"build_type": "workflow", "source": {"branch": "main", "path": "/"}},
+        json={"build_type": "legacy", "source": {"branch": "main", "path": "/"}},
+        timeout=20,
+    )
+    if r_pg.status_code == 409:
+        requests.put(
+            f"https://api.github.com/repos/{full_repo}/pages",
+            headers=headers,
+            json={"build_type": "legacy", "source": {"branch": "main", "path": "/"}},
+            timeout=20,
+        )
+    requests.post(
+        f"https://api.github.com/repos/{full_repo}/pages/builds",
+        headers=headers,
         timeout=20,
     )
 

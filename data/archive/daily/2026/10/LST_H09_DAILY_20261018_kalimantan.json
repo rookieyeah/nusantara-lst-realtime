@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-18",
+  "region": "kalimantan",
+  "frames_used": 1,
+  "land_pixels": 152335,
+  "clear_pixels": 24824,
+  "clear_fraction": 0.163,
+  "coverage_fraction": 0.163,
+  "mean_c": 28.56,
+  "max_c": 45.17,
+  "min_c": 14.5,
+  "std_c": 3.32,
+  "p95_c": 33.98,
+  "hotspot_threshold_c": 35.2,
+  "hotspot_pixels": 609
+}

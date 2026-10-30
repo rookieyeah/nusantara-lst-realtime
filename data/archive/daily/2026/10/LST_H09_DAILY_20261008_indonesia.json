@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-08",
+  "region": "indonesia",
+  "frames_used": 1,
+  "land_pixels": 468010,
+  "clear_pixels": 100337,
+  "clear_fraction": 0.2144,
+  "coverage_fraction": 0.2144,
+  "mean_c": 30.86,
+  "max_c": 55.97,
+  "min_c": 14.5,
+  "std_c": 4.73,
+  "p95_c": 39.13,
+  "hotspot_threshold_c": 40.32,
+  "hotspot_pixels": 3328
+}

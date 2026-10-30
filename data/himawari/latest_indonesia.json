@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-30T11:00:00+00:00",
-  "scan_start_utc": "2026-10-30T11:00:00",
-  "processed_utc": "2026-10-30T16:02:35+00:00",
-  "latency_min": 302.6,
+  "time_utc": "2026-10-30T12:00:00+00:00",
+  "scan_start_utc": "2026-10-30T12:00:00",
+  "processed_utc": "2026-10-30T17:51:16+00:00",
+  "latency_min": 351.3,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261030_1100_indonesia.tif",
-    "png": "LST_H09_20261030_1100_indonesia.png"
+    "cog": "LST_H09_20261030_1200_indonesia.tif",
+    "png": "LST_H09_20261030_1200_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -33,48 +33,48 @@
     "palette": {
       "stops": [
         0.0,
-        0.17,
-        0.33,
-        0.5,
-        0.67,
-        0.83,
+        0.2,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
         1.0
       ],
       "colors": [
         [
-          49,
-          54,
-          149
+          30,
+          58,
+          138
         ],
         [
-          69,
-          117,
-          180
+          6,
+          182,
+          212
         ],
         [
-          116,
-          173,
-          209
+          34,
+          197,
+          94
         ],
         [
-          254,
-          224,
-          144
+          250,
+          204,
+          21
         ],
         [
-          253,
-          174,
-          97
+          249,
+          115,
+          22
         ],
         [
-          215,
-          48,
-          39
-        ],
-        [
-          128,
-          0,
+          220,
+          38,
           38
+        ],
+        [
+          127,
+          29,
+          29
         ]
       ]
     }
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 138379,
-    "clear_fraction": 0.2957,
+    "clear_pixels": 143081,
+    "clear_fraction": 0.3057,
     "cloud_tests_fraction": {
-      "cold": 0.5195,
-      "split_window": 0.2223,
-      "spatial": 0.4008,
-      "cloud": 0.6907
+      "cold": 0.5294,
+      "split_window": 0.2343,
+      "spatial": 0.376,
+      "cloud": 0.6797
     },
     "min_c": 14.5,
-    "max_c": 35.55,
-    "mean_c": 26.2,
-    "std_c": 3.06,
-    "p05_c": 20.31,
-    "p50_c": 26.76,
-    "p95_c": 30.28,
-    "hotspot_threshold_c": 32.31,
-    "hotspot_pixels": 813
+    "max_c": 35.26,
+    "mean_c": 25.74,
+    "std_c": 2.99,
+    "p05_c": 19.83,
+    "p50_c": 26.27,
+    "p95_c": 29.73,
+    "hotspot_threshold_c": 31.73,
+    "hotspot_pixels": 861
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.432,
-    "png": 0.395
+    "cog": 0.435,
+    "png": 0.433
   },
   "timing_s": {
-    "cari_frame": 0.53,
-    "unduh": 170.25,
-    "baca+resample": 2.03,
+    "cari_frame": 2.34,
+    "unduh": 179.55,
+    "baca+resample": 3.29,
     "cloudmask": 0.16,
-    "hitung_lst": 0.06,
-    "tulis": 0.36,
-    "total": 173.39
+    "hitung_lst": 0.05,
+    "tulis": 0.48,
+    "total": 185.89
   },
   "pipeline_version": "0.1.0"
 }

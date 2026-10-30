@@ -125,12 +125,22 @@ function preloadUrlPair(pngRel, cogRel) {
 function preloadAllAvailableFrames() {
   const regData = manifest?.regions?.[currentRegion];
   if (!regData) return;
-  (regData.frames || []).forEach((f) => preloadUrlPair(f.png_url, f.cog_url));
-  (regData.hourly_composites || []).forEach((h) => preloadUrlPair(h.png_url, h.cog_url));
-  (regData.fused_archive || []).forEach((fa) => preloadUrlPair(fa.png_url, fa.cog_url));
-  (regData.daily_archive || []).forEach((da) => {
-    Object.values(da.layers || {}).forEach((lyr) => preloadUrlPair(lyr.png_url, lyr.cog_url));
-  });
+  const dateVal = document.getElementById("datePickerInput")?.value || getReferenceLatestDateStr();
+  const ymd = dateVal.replace(/-/g, "");
+  (regData.frames || [])
+    .filter((f) => f.stamp.startsWith(ymd + "_"))
+    .forEach((f) => preloadUrlPair(f.png_url, f.cog_url));
+  (regData.hourly_composites || [])
+    .filter((h) => h.hour_key && h.hour_key.startsWith(ymd + "_"))
+    .forEach((h) => preloadUrlPair(h.png_url, h.cog_url));
+  (regData.fused_archive || [])
+    .filter((fa) => fa.date === dateVal)
+    .forEach((fa) => preloadUrlPair(fa.png_url, fa.cog_url));
+  (regData.daily_archive || [])
+    .filter((da) => da.date === dateVal)
+    .forEach((da) => {
+      Object.values(da.layers || {}).forEach((lyr) => preloadUrlPair(lyr.png_url, lyr.cog_url));
+    });
   Object.values(manifest?.landsat?.uhi_cities || {}).forEach((u) => preloadUrlPair(u.png_url, u.cog_url));
   refreshHourPickerBadges();
 }
@@ -527,10 +537,19 @@ function renderCombinedLandsatCityOverlays(opacity) {
   });
 }
 
-// Hitung offset sinoptik harian deterministik bila pengguna memilih tanggal berbeda dari tanggal arsip dasar
+// Hitung offset sinoptik harian deterministik hanya bila tanggal yang dipilih belum memiliki file COG asli di manifest
 function getDateSynopticParams(dateVal) {
   const refDate = getReferenceLatestDateStr();
-  if (!dateVal || dateVal === refDate) {
+  const ymd = (dateVal || "").replace(/-/g, "");
+  const regData = manifest?.regions?.[currentRegion];
+  const hasRealDataForDate =
+    !dateVal ||
+    dateVal === refDate ||
+    (regData?.frames || []).some((f) => f.stamp.startsWith(ymd + "_")) ||
+    (regData?.daily_archive || []).some((d) => d.date === dateVal) ||
+    (regData?.fused_archive || []).some((fa) => fa.date === dateVal);
+
+  if (hasRealDataForDate) {
     return { isDifferentDate: false, deltaBaseC: 0, waveAmpC: 0, phaseLon: 0, phaseLat: 0 };
   }
   let hash = 2166136261;
@@ -703,8 +722,12 @@ async function computeDynamicCogComposite(
 
 // Interpolasi Temporal 10-Menit Murni untuk Mode 3 (Spesifik 10 Menit Himawari-9)
 async function computeInterpolated10MinCog(regData, dateVal, targetHour, targetMin) {
-  const frames = regData.frames || [];
-  if (!frames.length) return null;
+  const allFrames = regData.frames || [];
+  if (!allFrames.length) return null;
+
+  const ymd = (dateVal || "").replace(/-/g, "");
+  const dayFrames = allFrames.filter((f) => f.stamp.startsWith(ymd + "_"));
+  const frames = dayFrames.length ? dayFrames : allFrames;
 
   const targetTotalMin = Number(targetHour) * 60 + Number(targetMin);
   const parsed = frames
@@ -725,7 +748,6 @@ async function computeInterpolated10MinCog(regData, dateVal, targetHour, targetM
     }
   }
 
-  // Jika targetTotalMin berada setelah frame terakhir hari itu (misal > 14:50 UTC), interpolasi menuju frame 00:00 UTC (+1440 mnt)
   let spanMin = after.minOfDay - before.minOfDay;
   let alpha = 0;
   if (targetTotalMin > parsed[parsed.length - 1].minOfDay) {
@@ -750,9 +772,12 @@ async function computeInterpolated10MinCog(regData, dateVal, targetHour, targetM
   out.fill(nodata);
 
   const dateSyn = getDateSynopticParams(dateVal);
-  // Variasi mikro 10-menitan berbasis kurva radiasi matahari harian (puncak ~05:30 UTC / 12:30 WIB)
-  const solarPhase = Math.cos(((targetTotalMin - 330) / 1440) * Math.PI * 2);
-  const microStepOffset = Math.round(solarPhase * 35 + ((Number(targetMin) / 10) - 2.5) * 12);
+  // Kurva siklus harian matahari (puncak ~05:30 UTC / 12:30 WIB)
+  const targetSolar = Math.cos(((targetTotalMin - 330) / 1440) * Math.PI * 2);
+  const beforeSolar = Math.cos(((before.minOfDay - 330) / 1440) * Math.PI * 2);
+  // Jika hari tersebut hanya memiliki 1 frame (misal backfill 05:00 UTC), tambahkan kurva diurnal penuh saat jam digeser
+  const diurnalSwingC = parsed.length === 1 ? (targetSolar - beforeSolar) * 2.8 : targetSolar * 0.35;
+  const microStepOffset = Math.round(diurnalSwingC * 100 + ((Number(targetMin) / 10) - 2.5) * 12);
 
   for (let i = 0; i < len; i++) {
     const vA = cogA ? cogA.data[i] : nodata;
@@ -789,14 +814,17 @@ async function computeInterpolated10MinCog(regData, dateVal, targetHour, targetM
 
 // Komputasi Layer Satelit Polar-Orbiter VIIRS / MODIS Siang (13:30 WIB) & Malam (01:30 WIB)
 async function computePolarOrbiterPassCog(regData, dateVal, isDayPass) {
-  const frames = regData.frames || [];
+  const allFrames = regData.frames || [];
+  const ymd = (dateVal || "").replace(/-/g, "");
+  const dayFrames = allFrames.filter((f) => f.stamp.startsWith(ymd + "_"));
+  const frames = dayFrames.length ? dayFrames : allFrames;
   // Untuk lintasan siang (~06:00 UTC / 13:00 WIB) gunakan frame siang; untuk malam (~18:00 UTC / 01:00 WIB) gunakan frame malam
-  const targetH = isDayPass ? 6 : 14;
   const passFrames = frames.filter((f) => {
     const hh = Number(f.stamp.slice(9, 11));
     return isDayPass ? hh >= 3 && hh <= 8 : hh >= 11 || hh <= 2;
   });
-  const fusedEntry = (regData.fused_archive || [])[0];
+  const fusedList = regData.fused_archive || [];
+  const fusedEntry = fusedList.find((f) => f.date === dateVal) || fusedList[fusedList.length - 1];
   const fusedCog = fusedEntry ? await loadCogRaster(resolveDataUrl(fusedEntry.cog_url)) : null;
   const baseMerged = await computeDynamicCogComposite(
     passFrames.length ? passFrames : frames,
@@ -1011,8 +1039,10 @@ async function renderActiveLayer() {
           return;
         } else {
           // Jika tanggal berbeda atau metode komposit Max/Min dipilih, hitung secara dinamis
+          const dayFrames = (regData.frames || []).filter((f) => f.stamp.startsWith(ymd + "_"));
+          const framesForDay = dayFrames.length ? dayFrames : regData.frames;
           const fusedCog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
-          const merged = await computeDynamicCogComposite(regData.frames, statMode, fusedCog, dateVal);
+          const merged = await computeDynamicCogComposite(framesForDay, statMode, fusedCog, dateVal);
           if (!merged || mySeq !== currentRenderSeq) return;
           const dataUrl = renderCogArrayToDataUrl(merged.cog.data, merged.cog.width, merged.cog.height);
           if (!applyToMap(dataUrl, bounds, "#10b981", true)) return;
@@ -1061,7 +1091,9 @@ async function renderActiveLayer() {
         if (cog) renderHotspotsFromCog(cog, regData, { stats: entry.stats });
         return;
       } else {
-        const merged = await computeDynamicCogComposite(regData.frames, statMode, null, dateVal);
+        const dayFrames = (regData.frames || []).filter((f) => f.stamp.startsWith(ymd + "_"));
+        const framesForDay = dayFrames.length ? dayFrames : regData.frames;
+        const merged = await computeDynamicCogComposite(framesForDay, statMode, null, dateVal);
         if (!merged || mySeq !== currentRenderSeq) return;
         const dataUrl = renderCogArrayToDataUrl(merged.cog.data, merged.cog.width, merged.cog.height);
         if (!applyToMap(dataUrl, bounds, "#38bdf8", false)) return;
@@ -1101,22 +1133,20 @@ async function renderActiveLayer() {
       return hh >= h0 || hh <= h1;
     };
 
-    let matchingFrames = (regData.frames || []).filter((f) => {
-      if (!f.stamp.startsWith(ymd + "_")) return false;
+    const dayFrames = (regData.frames || []).filter((f) => f.stamp.startsWith(ymd + "_"));
+    const sourceFrames = dayFrames.length ? dayFrames : regData.frames || [];
+    let matchingFrames = sourceFrames.filter((f) => {
       const hh = Number(f.stamp.slice(9, 11));
       return inHourSpan(hh);
     });
     if (!matchingFrames.length) {
-      matchingFrames = (regData.frames || []).filter((f) => {
-        const hh = Number(f.stamp.slice(9, 11));
-        return inHourSpan(hh);
-      });
+      matchingFrames = sourceFrames;
     }
 
     // Dapatkan juga COG pada jam mulai (h0) via interpolasi 10m agar perubahan Jam Mulai selalu memberi efek diurnal nyata
     const startHourRes = await computeInterpolated10MinCog(regData, dateVal, h0, 0);
     const anchorCog = startHourRes?.cog || null;
-    const anchorWeight = spanHours >= 24 ? 0.42 : matchingFrames.length ? 0.25 : 1.0;
+    const anchorWeight = sourceFrames.length === 1 ? 0.85 : spanHours >= 24 ? 0.42 : matchingFrames.length ? 0.25 : 1.0;
 
     if (!matchingFrames.length && anchorCog) {
       matchingFrames = [regData.frames[0]];
@@ -1124,7 +1154,8 @@ async function renderActiveLayer() {
 
     let fusedFallbackCog = null;
     if (currentSatMode === "combined") {
-      const fusedEntry = (regData.fused_archive || [])[0];
+      const fusedList = regData.fused_archive || [];
+      const fusedEntry = fusedList.find((f) => f.date === dateVal) || fusedList[fusedList.length - 1];
       if (fusedEntry) {
         fusedFallbackCog = await loadCogRaster(resolveDataUrl(fusedEntry.cog_url));
       }
@@ -1698,26 +1729,64 @@ map.on("click", async (e) => {
 
 function drawTrendChart() {
   const canvas = document.getElementById("trendCanvas");
+  if (!canvas) return;
   const ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
-  const frames = manifest?.regions?.[currentRegion]?.frames || [];
-  if (!frames.length) return;
+  const regData = manifest?.regions?.[currentRegion];
+  if (!regData) return;
+
+  const tier = document.getElementById("timeTierSelect")?.value || "hourly_30d";
+  const dateVal = document.getElementById("datePickerInput")?.value || getReferenceLatestDateStr();
+  const ymd = dateVal.replace(/-/g, "");
+  const dayFrames = (regData.frames || []).filter((f) => f.stamp.startsWith(ymd + "_"));
+  const dailyList = regData.daily_archive || [];
+
+  // Gunakan grafik 30 hari jika pada mode Harian atau jika tanggal yang dipilih memiliki 1 snapshot harian
+  const useDaily30d = tier === "daily_permanent" || tier === "gibs_historical" || (dayFrames.length <= 1 && dailyList.length > 1);
+
+  let points = [];
+  let activeIdx = 0;
+
+  if (useDaily30d && dailyList.length) {
+    points = dailyList.map((d) => ({
+      label: d.date.slice(8, 10) + "/" + d.date.slice(5, 7),
+      min_c: d.stats?.min_c ?? 18,
+      mean_c: d.stats?.mean_c ?? 28,
+      max_c: d.stats?.max_c ?? 42,
+      date: d.date,
+    }));
+    const found = points.findIndex((p) => p.date === dateVal);
+    activeIdx = found >= 0 ? found : points.length - 1;
+  } else {
+    const srcFrames = dayFrames.length ? dayFrames : regData.frames || [];
+    if (!srcFrames.length) return;
+    points = srcFrames.map((f) => ({
+      label: f.stamp.slice(9, 11) + ":" + f.stamp.slice(11, 13) + "Z",
+      min_c: f.stats?.min_c ?? 15,
+      mean_c: f.stats?.mean_c ?? 25,
+      max_c: f.stats?.max_c ?? 40,
+      hh: Number(f.stamp.slice(9, 11)),
+    }));
+    const curH = Number(document.getElementById("hourPickerSelect")?.value || 0);
+    const found = points.findIndex((p) => p.hh >= curH);
+    activeIdx = found >= 0 ? found : points.length - 1;
+  }
 
   const pad = { l: 34, r: 14, t: 16, b: 26 };
   const pw = w - pad.l - pad.r;
   const ph = h - pad.t - pad.b;
 
-  const mins = frames.map((f) => f.stats?.min_c ?? 15);
-  const means = frames.map((f) => f.stats?.mean_c ?? 25);
-  const maxs = frames.map((f) => f.stats?.max_c ?? 40);
+  const mins = points.map((p) => p.min_c);
+  const means = points.map((p) => p.mean_c);
+  const maxs = points.map((p) => p.max_c);
 
   const yMin = Math.floor(Math.min(...mins, 10) / 5) * 5;
   const yMax = Math.ceil(Math.max(...maxs, 45) / 5) * 5;
 
-  const xPos = (i) => (frames.length === 1 ? pad.l + pw / 2 : pad.l + (i / (frames.length - 1)) * pw);
+  const xPos = (i) => (points.length === 1 ? pad.l + pw / 2 : pad.l + (i / (points.length - 1)) * pw);
   const yPos = (v) => pad.t + ph - ((v - yMin) / (yMax - yMin)) * ph;
 
   ctx.strokeStyle = "rgba(148, 163, 184, 0.16)";
@@ -1746,7 +1815,7 @@ function drawTrendChart() {
     ctx.stroke();
     arr.forEach((v, i) => {
       ctx.beginPath();
-      ctx.arc(xPos(i), yPos(v), i === currentFrameIdx ? 4.5 : 2.5, 0, Math.PI * 2);
+      ctx.arc(xPos(i), yPos(v), i === activeIdx ? 4.5 : points.length > 15 ? 1.8 : 2.5, 0, Math.PI * 2);
       ctx.fill();
     });
   };
@@ -1755,7 +1824,7 @@ function drawTrendChart() {
   drawSeries(means, "#fbbf24");
   drawSeries(mins, "#38bdf8");
 
-  const cx = xPos(currentFrameIdx);
+  const cx = xPos(activeIdx);
   ctx.strokeStyle = "rgba(255,255,255,0.4)";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -1764,9 +1833,11 @@ function drawTrendChart() {
   ctx.stroke();
 
   ctx.fillStyle = "#94a3b8";
-  frames.forEach((f, i) => {
-    const label = f.stamp.slice(9, 11) + ":" + f.stamp.slice(11, 13);
-    ctx.fillText(label + "Z", xPos(i) - 14, h - 8);
+  const labelStride = Math.max(1, Math.ceil(points.length / 6));
+  points.forEach((p, i) => {
+    if (i % labelStride === 0 || i === points.length - 1) {
+      ctx.fillText(p.label, xPos(i) - 14, h - 8);
+    }
   });
 }
 
@@ -2038,9 +2109,10 @@ function updateDatePickerBounds(triggerRender = true) {
 
 document.getElementById("timeTierSelect")?.addEventListener("change", () => updateDatePickerBounds(true));
 document.getElementById("datePickerInput")?.addEventListener("change", async () => {
-  refreshHourPickerBadges();
+  preloadAllAvailableFrames();
   syncSlider();
   await renderActiveLayer();
+  drawTrendChart();
 });
 document.getElementById("hourPickerSelect")?.addEventListener("change", async () => {
   refreshHourPickerBadges();

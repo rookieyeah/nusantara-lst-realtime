@@ -1,0 +1,121 @@
+{
+  "source": "himawari9",
+  "time_utc": "2026-10-27T05:00:00+00:00",
+  "scan_start_utc": "2026-10-27T05:00:00",
+  "processed_utc": "2026-10-30T18:39:08+00:00",
+  "latency_min": 5139.1,
+  "region": "indonesia",
+  "bbox": [
+    94.5,
+    -11.5,
+    141.5,
+    6.5
+  ],
+  "grid": {
+    "width": 2350,
+    "height": 900,
+    "res_deg": 0.02,
+    "crs": "EPSG:4326"
+  },
+  "files": {
+    "cog": "LST_H09_20261027_0500_indonesia.tif",
+    "png": "LST_H09_20261027_0500_indonesia.png"
+  },
+  "encoding": {
+    "dtype": "int16",
+    "scale": 0.01,
+    "nodata": -32768,
+    "units": "degC"
+  },
+  "preview": {
+    "vmin_c": 15.0,
+    "vmax_c": 55.0,
+    "palette": {
+      "stops": [
+        0.0,
+        0.2,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ],
+      "colors": [
+        [
+          30,
+          58,
+          138
+        ],
+        [
+          6,
+          182,
+          212
+        ],
+        [
+          34,
+          197,
+          94
+        ],
+        [
+          250,
+          204,
+          21
+        ],
+        [
+          249,
+          115,
+          22
+        ],
+        [
+          220,
+          38,
+          38
+        ],
+        [
+          127,
+          29,
+          29
+        ]
+      ]
+    }
+  },
+  "algorithm": {
+    "name": "generalized_split_window_v0",
+    "bands": [
+      "B14",
+      "B15"
+    ],
+    "segments": [
+      5,
+      6
+    ],
+    "water_vapour_gcm2": 4.5,
+    "provisional": true
+  },
+  "stats": {
+    "land_pixels": 468010,
+    "clear_pixels": 50244,
+    "clear_fraction": 0.1074,
+    "cloud_tests_fraction": {
+      "cold": 0.5398,
+      "split_window": 0.3255,
+      "spatial": 0.5595,
+      "cloud": 0.8881
+    },
+    "min_c": 14.61,
+    "max_c": 48.78,
+    "mean_c": 31.16,
+    "std_c": 4.07,
+    "p05_c": 24.67,
+    "p50_c": 30.96,
+    "p95_c": 38.37,
+    "hotspot_threshold_c": 39.3,
+    "hotspot_pixels": 1882
+  },
+  "sizes_mb": {
+    "raw_download": 36.31,
+    "cog": 0.23,
+    "png": 0.194
+  },
+  "pipeline_version": "0.1.0"
+}

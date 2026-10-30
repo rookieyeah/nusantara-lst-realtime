@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-22",
+  "region": "indonesia",
+  "product": "Gabungan Semua Satelit (Himawari-9 + VIIRS/Sentinel-3 + Landsat 8/9)",
+  "himawari_frames_merged": 1,
+  "landsat_cities_blended": [
+    "Balikpapan & IKN Nusantara (Kalimantan Timur)",
+    "Banjarmasin & Banjarbaru (Kalimantan Selatan)",
+    "DKI Jakarta & Jabodetabek (Jawa)"
+  ],
+  "direct_satellite_coverage_fraction": 0.2847,
+  "fused_coverage_fraction": 0.856,
+  "cog_url": "composites/fused/LST_FUSED_ALLSAT_20261022_indonesia.tif",
+  "png_url": "composites/fused/LST_FUSED_ALLSAT_20261022_indonesia.png",
+  "stats": {
+    "land_pixels": 468010,
+    "clear_pixels": 400628,
+    "clear_fraction": 0.856,
+    "direct_clear_fraction": 0.2847,
+    "min_c": 14.5,
+    "max_c": 58.0,
+    "mean_c": 31.11,
+    "std_c": 5.27,
+    "p05_c": 23.05,
+    "p50_c": 30.71,
+    "p95_c": 39.98,
+    "hotspot_threshold_c": 41.65,
+    "hotspot_pixels": 10550
+  },
+  "sizes_mb": {
+    "cog": 0.88,
+    "png": 0.81
+  }
+}

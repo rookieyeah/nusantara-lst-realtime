@@ -2,33 +2,33 @@
   "date": "2026-10-31",
   "region": "indonesia",
   "product": "Gabungan Semua Satelit (Himawari-9 + VIIRS/Sentinel-3 + Landsat 8/9)",
-  "himawari_frames_merged": 16,
+  "himawari_frames_merged": 17,
   "landsat_cities_blended": [
     "Balikpapan & IKN Nusantara (Kalimantan Timur)",
     "Banjarmasin & Banjarbaru (Kalimantan Selatan)",
     "DKI Jakarta & Jabodetabek (Jawa)"
   ],
-  "direct_satellite_coverage_fraction": 0.5155,
-  "fused_coverage_fraction": 0.9886,
+  "direct_satellite_coverage_fraction": 0.5352,
+  "fused_coverage_fraction": 0.9931,
   "cog_url": "composites/fused/LST_FUSED_ALLSAT_20261031_indonesia.tif",
   "png_url": "composites/fused/LST_FUSED_ALLSAT_20261031_indonesia.png",
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 462696,
-    "clear_fraction": 0.9886,
-    "direct_clear_fraction": 0.5155,
+    "clear_pixels": 464785,
+    "clear_fraction": 0.9931,
+    "direct_clear_fraction": 0.5352,
     "min_c": 14.5,
     "max_c": 58.0,
-    "mean_c": 27.42,
-    "std_c": 4.05,
-    "p05_c": 20.98,
-    "p50_c": 27.12,
-    "p95_c": 34.49,
-    "hotspot_threshold_c": 35.52,
-    "hotspot_pixels": 13125
+    "mean_c": 27.32,
+    "std_c": 4.01,
+    "p05_c": 20.93,
+    "p50_c": 27.06,
+    "p95_c": 34.25,
+    "hotspot_threshold_c": 35.33,
+    "hotspot_pixels": 13008
   },
   "sizes_mb": {
-    "cog": 0.993,
-    "png": 1.046
+    "cog": 0.998,
+    "png": 1.056
   }
 }

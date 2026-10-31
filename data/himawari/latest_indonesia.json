@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T08:30:00+00:00",
-  "scan_start_utc": "2026-10-31T08:30:00",
-  "processed_utc": "2026-10-31T08:48:12+00:00",
-  "latency_min": 18.2,
+  "time_utc": "2026-10-31T09:10:00+00:00",
+  "scan_start_utc": "2026-10-31T09:10:00",
+  "processed_utc": "2026-10-31T09:26:39+00:00",
+  "latency_min": 16.7,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_0830_indonesia.tif",
-    "png": "LST_H09_20261031_0830_indonesia.png"
+    "cog": "LST_H09_20261031_0910_indonesia.tif",
+    "png": "LST_H09_20261031_0910_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 58548,
-    "clear_fraction": 0.1251,
+    "clear_pixels": 65864,
+    "clear_fraction": 0.1407,
     "cloud_tests_fraction": {
-      "cold": 0.6555,
-      "split_window": 0.2345,
-      "spatial": 0.5491,
-      "cloud": 0.8661
+      "cold": 0.6669,
+      "split_window": 0.2129,
+      "spatial": 0.5287,
+      "cloud": 0.8486
     },
-    "min_c": 14.66,
-    "max_c": 43.3,
-    "mean_c": 29.51,
-    "std_c": 3.61,
-    "p05_c": 23.09,
-    "p50_c": 29.82,
-    "p95_c": 35.05,
-    "hotspot_threshold_c": 36.73,
-    "hotspot_pixels": 1007
+    "min_c": 14.68,
+    "max_c": 39.66,
+    "mean_c": 29.09,
+    "std_c": 3.43,
+    "p05_c": 22.94,
+    "p50_c": 29.38,
+    "p95_c": 34.33,
+    "hotspot_threshold_c": 35.95,
+    "hotspot_pixels": 608
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.227,
-    "png": 0.204
+    "cog": 0.244,
+    "png": 0.223
   },
   "timing_s": {
-    "cari_frame": 0.4,
-    "unduh": 1.6,
-    "baca+resample": 3.3,
+    "cari_frame": 0.24,
+    "unduh": 0.93,
+    "baca+resample": 3.96,
     "cloudmask": 0.12,
-    "hitung_lst": 0.02,
-    "tulis": 0.4,
-    "total": 5.85
+    "hitung_lst": 0.03,
+    "tulis": 0.41,
+    "total": 5.68
   },
   "pipeline_version": "0.1.0"
 }

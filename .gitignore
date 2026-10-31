@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 cache/
-data/
+.cache/
+data/raw/
 *.DAT
 *.DAT.bz2

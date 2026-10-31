@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T03:30:00+00:00",
-  "scan_start_utc": "2026-10-31T03:30:00",
-  "processed_utc": "2026-10-31T03:49:38+00:00",
-  "latency_min": 19.6,
+  "time_utc": "2026-10-31T04:10:00+00:00",
+  "scan_start_utc": "2026-10-31T04:10:00",
+  "processed_utc": "2026-10-31T04:29:43+00:00",
+  "latency_min": 19.7,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_0330_indonesia.tif",
-    "png": "LST_H09_20261031_0330_indonesia.png"
+    "cog": "LST_H09_20261031_0410_indonesia.tif",
+    "png": "LST_H09_20261031_0410_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 31529,
-    "clear_fraction": 0.0674,
+    "clear_pixels": 30167,
+    "clear_fraction": 0.0645,
     "cloud_tests_fraction": {
-      "cold": 0.5289,
-      "split_window": 0.3715,
-      "spatial": 0.5603,
-      "cloud": 0.9236
+      "cold": 0.5338,
+      "split_window": 0.354,
+      "spatial": 0.5896,
+      "cloud": 0.9279
     },
-    "min_c": 14.92,
-    "max_c": 45.68,
-    "mean_c": 30.72,
+    "min_c": 14.76,
+    "max_c": 45.46,
+    "mean_c": 30.92,
     "std_c": 4.53,
-    "p05_c": 22.72,
-    "p50_c": 31.25,
-    "p95_c": 37.73,
-    "hotspot_threshold_c": 39.78,
-    "hotspot_pixels": 589
+    "p05_c": 22.9,
+    "p50_c": 31.46,
+    "p95_c": 38.12,
+    "hotspot_threshold_c": 39.99,
+    "hotspot_pixels": 608
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.167,
-    "png": 0.139
+    "cog": 0.163,
+    "png": 0.132
   },
   "timing_s": {
-    "cari_frame": 0.49,
-    "unduh": 1.9,
-    "baca+resample": 2.96,
-    "cloudmask": 0.1,
-    "hitung_lst": 0.02,
-    "tulis": 0.26,
-    "total": 5.75
+    "cari_frame": 0.4,
+    "unduh": 1.88,
+    "baca+resample": 3.28,
+    "cloudmask": 0.16,
+    "hitung_lst": 0.04,
+    "tulis": 0.33,
+    "total": 6.1
   },
   "pipeline_version": "0.1.0"
 }

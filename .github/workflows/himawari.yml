@@ -1,9 +1,6 @@
-name: Himawari-9 Near-Realtime LST Pipeline
+name: Himawari-9 On-Demand / Backfill LST Pipeline
 
 on:
-  schedule:
-    # Berjalan otomatis setiap 15 menit
-    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       region:
@@ -20,7 +17,7 @@ on:
         default: "false"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   process-lst:
@@ -37,33 +34,28 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
-      - name: Cache static landmask & pyresample LUT
-        uses: actions/cache@v4
-        with:
-          path: |
-            static/
-            cache/resample/
-          key: lst-static-v1-${{ hashFiles('config/settings.yaml') }}
-
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt huggingface_hub
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run Himawari-9 LST pipeline (Indonesia & Kalimantan)
         run: |
           if [ "${{ inputs.backfill_today }}" = "true" ]; then
             python -m pipeline.backfill --step-hours 1
           elif [ -n "${{ inputs.time_utc }}" ]; then
-            python -m pipeline.run_himawari --region "${{ inputs.region || 'indonesia' }}" --time "${{ inputs.time_utc }}"
+            python -m pipeline.run_himawari --region "${{ inputs.region || 'indonesia' }}" --time "${{ inputs.time_utc }}" --update-composites
           else
-            python -m pipeline.run_himawari --region indonesia
-            python -m pipeline.run_himawari --region kalimantan
+            python -m pipeline.run_himawari --region indonesia --keep-raw --update-composites
+            python -m pipeline.run_himawari --region kalimantan --update-composites
           fi
 
-      - name: Sync to Hugging Face Hub Dataset
+      - name: Sync to Hugging Face Hub Dataset & Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+          HF_SPACE_ID: ${{ vars.HF_SPACE_ID }}
         run: |
-          python -c "from pipeline.storage import upload_to_hf; upload_to_hf()"
+          if [ -n "$HF_TOKEN" ]; then
+            python -m pipeline.deploy --hf-token "$HF_TOKEN" --sync-only
+          fi

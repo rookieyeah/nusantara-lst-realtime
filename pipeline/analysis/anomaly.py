@@ -52,7 +52,7 @@ def run_region_analysis(region: str, data_dir: Path = DATA_DIR) -> dict | None:
     if not him_dir.exists():
         return None
 
-    cogs = sorted(him_dir.rglob(f"LST_H09_*_{region}.tif"))
+    cogs = sorted(him_dir.rglob(f"LST_H09_*_{region}.tif"))[-16:]
     if not cogs:
         return None
 

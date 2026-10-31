@@ -1,13 +1,10 @@
-name: Daily Retention Cleanup & Aggregation
+name: Manual Retention Cleanup & Aggregation
 
 on:
-  schedule:
-    # Berjalan setiap hari pukul 17:30 UTC (00:30 WIB)
-    - cron: "30 17 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   retention-and-squash:
@@ -26,8 +23,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt huggingface_hub
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Aggregate daily LST, clean expired frames & squash HF Git history
         env:

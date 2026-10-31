@@ -24,7 +24,9 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Enforce Retention Policy (48h 10-min / 30d Hourly / Permanent Daily) & Squash HF Git
         env:

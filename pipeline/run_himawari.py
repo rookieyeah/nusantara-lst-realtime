@@ -72,7 +72,13 @@ def load_brightness_temperature(files: list[Path], bands: list[str], grid, cache
     return out, start
 
 
-def run(region: str | None = None, at: str | None = None, out_dir: Path = DATA_DIR, keep_raw: bool = False) -> dict:
+def run(
+    region: str | None = None,
+    at: str | None = None,
+    out_dir: Path = DATA_DIR,
+    keep_raw: bool = False,
+    update_composites: bool = False,
+) -> dict:
     settings = load_settings()
     hcfg = settings["himawari"]
     grid = region_grid(settings, region)
@@ -172,6 +178,18 @@ def run(region: str | None = None, at: str | None = None, out_dir: Path = DATA_D
     }
     write_json(meta, json_path)
     write_json(meta, out_dir / "himawari" / f"latest_{grid.key}.json")
+
+    if update_composites:
+        from .analysis.anomaly import run_region_analysis
+        from .processing.fusion import build_hourly_composites, build_multi_sensor_fusion
+        from .retention import aggregate_day
+
+        frame_day = frame.time.date()
+        build_hourly_composites(frame_day, grid.key, out_dir)
+        aggregate_day(frame_day, grid.key, out_dir)
+        build_multi_sensor_fusion(frame_day, grid.key, out_dir)
+        run_region_analysis(grid.key, out_dir)
+
     build_manifest(out_dir)
 
     if not keep_raw:
@@ -194,9 +212,14 @@ def run(region: str | None = None, at: str | None = None, out_dir: Path = DATA_D
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--region", help="kunci wilayah di settings.yaml (default: active_region)")
-    ap.add_argument("--time", dest="at", help="waktu frame UTC, format YYYYMMDDHHMM (default: terbaru)")
+    ap.add_argument("--time", "--at", dest="at", help="waktu frame UTC, format YYYYMMDDHHMM (default: terbaru)")
     ap.add_argument("--out", type=Path, default=DATA_DIR, help="folder output")
     ap.add_argument("--keep-raw", action="store_true", help="jangan hapus file mentah setelah selesai")
+    ap.add_argument(
+        "--update-composites",
+        action="store_true",
+        help="perbarui juga komposit jam, harian, fusi multi-satelit, dan anomali untuk tanggal frame",
+    )
     args = ap.parse_args()
     logging.basicConfig(
         level=logging.INFO,
@@ -204,7 +227,13 @@ def main() -> None:
         datefmt="%H:%M:%S",
         stream=sys.stdout,
     )
-    run(region=args.region, at=args.at, out_dir=args.out, keep_raw=args.keep_raw)
+    run(
+        region=args.region,
+        at=args.at,
+        out_dir=args.out,
+        keep_raw=args.keep_raw,
+        update_composites=args.update_composites,
+    )
 
 
 if __name__ == "__main__":

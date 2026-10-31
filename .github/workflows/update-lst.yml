@@ -14,10 +14,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: "lst-auto-update"
+  cancel-in-progress: false
+
 jobs:
   update-lst:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,36 +33,21 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Fetch & Process Himawari-9 LST (Indonesia & Kalimantan)
+      - name: Fetch & Process Himawari-9 LST + Update Composites (Indonesia & Kalimantan)
         env:
           TARGET_TIME: ${{ github.event.inputs.target_time_utc }}
         run: |
           if [ -n "$TARGET_TIME" ]; then
-            python -m pipeline.run_himawari --region indonesia --at "$TARGET_TIME" --keep-raw
-            python -m pipeline.run_himawari --region kalimantan --at "$TARGET_TIME"
+            python -m pipeline.run_himawari --region indonesia --at "$TARGET_TIME" --keep-raw --update-composites
+            python -m pipeline.run_himawari --region kalimantan --at "$TARGET_TIME" --update-composites
           else
-            python -m pipeline.run_himawari --region indonesia --keep-raw
-            python -m pipeline.run_himawari --region kalimantan
+            python -m pipeline.run_himawari --region indonesia --keep-raw --update-composites
+            python -m pipeline.run_himawari --region kalimantan --update-composites
           fi
-
-      - name: Update Hourly Composites, Daily Aggregates & Multi-Satellite Fusion
-        run: |
-          python -c "
-          from datetime import datetime, timezone
-          from pipeline.processing.fusion import build_hourly_composites, build_multi_sensor_fusion
-          from pipeline.retention import aggregate_day
-          from pipeline.analysis.anomaly import run_region_analysis
-          from pipeline.storage import build_manifest
-          today = datetime.now(timezone.utc).date()
-          for r in ('indonesia', 'kalimantan'):
-              build_hourly_composites(today, r)
-              aggregate_day(today, r)
-              build_multi_sensor_fusion(today, r)
-              run_region_analysis(r)
-          build_manifest()
-          "
 
       - name: Sync to Hugging Face Hub Dataset & Space (if HF_TOKEN configured)
         env:
@@ -70,4 +59,17 @@ jobs:
             python -m pipeline.deploy --hf-token "$HF_TOKEN" --sync-only
           else
             echo "HF_TOKEN belum diset; lewati unggah ke Hugging Face Hub."
+          fi
+
+      - name: Commit & Push Updated LST Data to GitHub Repository (GitHub Pages)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if ! git diff --cached --quiet; then
+            git commit -m "Auto-update Himawari-9 LST $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase origin main || true
+            git push origin HEAD:main
+          else
+            echo "Tidak ada perubahan data baru."
           fi

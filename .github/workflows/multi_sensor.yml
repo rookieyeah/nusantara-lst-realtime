@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   multi-sensor-and-analysis:
@@ -26,16 +26,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt huggingface_hub
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run Multi-Sensor, Hotspot/Anomaly/UHI Analysis & BMKG Validation
         run: |
           python -m pipeline.run_all
 
-      - name: Sync to Hugging Face Hub Dataset
+      - name: Sync to Hugging Face Hub Dataset & Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_REPO_REALTIME: ${{ vars.HF_REPO_REALTIME }}
+          HF_SPACE_ID: ${{ vars.HF_SPACE_ID }}
         run: |
-          python -c "from pipeline.storage import upload_to_hf; upload_to_hf()"
+          if [ -n "$HF_TOKEN" ]; then
+            python -m pipeline.deploy --hf-token "$HF_TOKEN" --sync-only
+          fi

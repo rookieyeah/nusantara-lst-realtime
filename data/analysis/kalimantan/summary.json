@@ -1,37 +1,37 @@
 {
   "region": "kalimantan",
-  "latest_stamp": "20261031_0010",
+  "latest_stamp": "20261031_0020",
   "peak_day_stamp": "20261030_0800",
   "frames_in_baseline": 16,
   "anomaly": {
-    "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_0010_kalimantan.png",
-    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_0010_kalimantan.tif",
+    "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_0020_kalimantan.png",
+    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_0020_kalimantan.tif",
     "vmin_c": -6.0,
     "vmax_c": 6.0,
-    "min_delta_c": -8.95,
-    "max_delta_c": 5.91,
-    "warm_anomaly_pixels_z2": 5,
-    "cool_anomaly_pixels_z2": 267
+    "min_delta_c": -8.13,
+    "max_delta_c": 5.8,
+    "warm_anomaly_pixels_z2": 2,
+    "cool_anomaly_pixels_z2": 244
   },
   "hotspots_latest": {
-    "regional_mean_c": 25.87,
-    "regional_std_c": 3.65,
-    "threshold_2sigma_c": 33.16,
-    "threshold_3sigma_c": 36.81,
-    "total_hotspot_pixels": 5,
-    "total_hotspot_area_km2": 24.7,
+    "regional_mean_c": 25.91,
+    "regional_std_c": 3.69,
+    "threshold_2sigma_c": 33.28,
+    "threshold_3sigma_c": 36.97,
+    "total_hotspot_pixels": 2,
+    "total_hotspot_area_km2": 9.9,
     "cluster_count": 1,
     "clusters": [
       {
         "cluster_id": 1,
         "zone": "Kalimantan Timur (IKN)",
-        "lat": 0.51,
-        "lon": 117.57,
+        "lat": 0.79,
+        "lon": 117.61,
         "pixels": 2,
         "area_km2": 9.9,
-        "max_c": 33.43,
-        "mean_c": 33.35,
-        "anomaly_vs_regional_mean_c": 7.56,
+        "max_c": 33.7,
+        "mean_c": 33.69,
+        "anomaly_vs_regional_mean_c": 7.79,
         "severity": "SIAGA (> μ+2σ)",
         "rank": 1
       }
@@ -371,12 +371,12 @@
         119.0,
         2.6
       ],
-      "clear_pixels": 5449,
-      "min_c": 15.69,
-      "mean_c": 26.79,
-      "max_c": 34.41,
-      "p95_c": 31.59,
-      "hotspot_pixels": 5
+      "clear_pixels": 4625,
+      "min_c": 15.31,
+      "mean_c": 27.08,
+      "max_c": 33.7,
+      "p95_c": 31.84,
+      "hotspot_pixels": 2
     },
     {
       "zone_id": "kaltara",
@@ -388,11 +388,11 @@
         118.0,
         4.5
       ],
-      "clear_pixels": 3308,
-      "min_c": 15.49,
-      "mean_c": 23.85,
-      "max_c": 32.74,
-      "p95_c": 30.89,
+      "clear_pixels": 2768,
+      "min_c": 14.9,
+      "mean_c": 23.92,
+      "max_c": 32.5,
+      "p95_c": 31.03,
       "hotspot_pixels": 0
     },
     {
@@ -405,11 +405,11 @@
         125.3,
         1.8
       ],
-      "clear_pixels": 1167,
-      "min_c": 15.56,
+      "clear_pixels": 1022,
+      "min_c": 15.89,
       "mean_c": 25.48,
-      "max_c": 31.87,
-      "p95_c": 30.72,
+      "max_c": 32.36,
+      "p95_c": 30.95,
       "hotspot_pixels": 0
     },
     {
@@ -422,11 +422,11 @@
         114.2,
         2.1
       ],
-      "clear_pixels": 68,
-      "min_c": 20.08,
-      "mean_c": 28.08,
-      "max_c": 31.04,
-      "p95_c": 30.77,
+      "clear_pixels": 75,
+      "min_c": 19.71,
+      "mean_c": 24.26,
+      "max_c": 30.71,
+      "p95_c": 29.95,
       "hotspot_pixels": 0
     },
     {
@@ -439,11 +439,11 @@
         115.8,
         0.8
       ],
-      "clear_pixels": 77,
-      "min_c": 19.67,
-      "mean_c": 27.53,
-      "max_c": 31.04,
-      "p95_c": 30.76,
+      "clear_pixels": 33,
+      "min_c": 19.52,
+      "mean_c": 24.67,
+      "max_c": 30.71,
+      "p95_c": 30.51,
       "hotspot_pixels": 0
     },
     {
@@ -456,11 +456,11 @@
         116.6,
         -1.3
       ],
-      "clear_pixels": 111,
-      "min_c": 19.67,
-      "mean_c": 24.25,
-      "max_c": 28.35,
-      "p95_c": 27.4,
+      "clear_pixels": 80,
+      "min_c": 19.52,
+      "mean_c": 24.59,
+      "max_c": 27.62,
+      "p95_c": 27.15,
       "hotspot_pixels": 0
     }
   ],

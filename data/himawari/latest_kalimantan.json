@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T20:20:00+00:00",
-  "scan_start_utc": "2026-10-31T20:20:00",
-  "processed_utc": "2026-10-31T20:42:03+00:00",
-  "latency_min": 22.1,
+  "time_utc": "2026-10-31T21:00:00+00:00",
+  "scan_start_utc": "2026-10-31T21:00:00",
+  "processed_utc": "2026-10-31T21:14:29+00:00",
+  "latency_min": 14.5,
   "region": "kalimantan",
   "bbox": [
     108.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_2020_kalimantan.tif",
-    "png": "LST_H09_20261031_2020_kalimantan.png"
+    "cog": "LST_H09_20261031_2100_kalimantan.tif",
+    "png": "LST_H09_20261031_2100_kalimantan.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -94,37 +94,37 @@
   },
   "stats": {
     "land_pixels": 152335,
-    "clear_pixels": 9768,
-    "clear_fraction": 0.0641,
+    "clear_pixels": 13032,
+    "clear_fraction": 0.0855,
     "cloud_tests_fraction": {
-      "cold": 0.8369,
-      "split_window": 0.2541,
-      "spatial": 0.4341,
-      "cloud": 0.9195
+      "cold": 0.8157,
+      "split_window": 0.257,
+      "spatial": 0.4131,
+      "cloud": 0.8994
     },
-    "min_c": 15.98,
-    "max_c": 30.36,
-    "mean_c": 22.1,
-    "std_c": 2.25,
-    "p05_c": 18.3,
-    "p50_c": 22.29,
-    "p95_c": 25.83,
-    "hotspot_threshold_c": 26.59,
-    "hotspot_pixels": 208
+    "min_c": 15.01,
+    "max_c": 29.68,
+    "mean_c": 22.58,
+    "std_c": 2.15,
+    "p05_c": 18.84,
+    "p50_c": 22.65,
+    "p95_c": 26.35,
+    "hotspot_threshold_c": 26.89,
+    "hotspot_pixels": 366
   },
   "sizes_mb": {
     "raw_download": 24.21,
-    "cog": 0.039,
-    "png": 0.035
+    "cog": 0.045,
+    "png": 0.041
   },
   "timing_s": {
-    "cari_frame": 0.17,
-    "unduh": 0.0,
-    "baca+resample": 1.84,
-    "cloudmask": 0.02,
-    "hitung_lst": 0.0,
-    "tulis": 0.07,
-    "total": 2.11
+    "cari_frame": 0.33,
+    "unduh": 1.43,
+    "baca+resample": 1.46,
+    "cloudmask": 0.04,
+    "hitung_lst": 0.01,
+    "tulis": 0.08,
+    "total": 3.35
   },
   "pipeline_version": "0.1.0"
 }

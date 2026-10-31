@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-31T10:02:45+00:00",
+  "updated_utc": "2026-10-31T10:41:16+00:00",
   "active_region": "indonesia",
   "time_Select_policy": {
     "realtime_10min_max_hours": 48,
@@ -28,8 +28,8 @@
         6.5
       ],
       "res_deg": 0.02,
-      "frame_count": 55,
-      "latest": "2026-10-31T09:40:00+00:00",
+      "frame_count": 56,
+      "latest": "2026-10-31T10:20:00+00:00",
       "frames": [
         {
           "stamp": "20261001_0500",
@@ -1845,6 +1845,39 @@
             "cog": 0.26,
             "png": 0.242
           }
+        },
+        {
+          "stamp": "20261031_1020",
+          "time_utc": "2026-10-31T10:20:00+00:00",
+          "latency_min": 21.1,
+          "cog_url": "himawari/2026/10/31/LST_H09_20261031_1020_indonesia.tif",
+          "png_url": "himawari/2026/10/31/LST_H09_20261031_1020_indonesia.png",
+          "json_url": "himawari/2026/10/31/LST_H09_20261031_1020_indonesia.json",
+          "stats": {
+            "land_pixels": 468010,
+            "clear_pixels": 84603,
+            "clear_fraction": 0.1808,
+            "cloud_tests_fraction": {
+              "cold": 0.6723,
+              "split_window": 0.1799,
+              "spatial": 0.4999,
+              "cloud": 0.8131
+            },
+            "min_c": 14.53,
+            "max_c": 35.66,
+            "mean_c": 27.69,
+            "std_c": 3.47,
+            "p05_c": 21.2,
+            "p50_c": 28.31,
+            "p95_c": 32.4,
+            "hotspot_threshold_c": 34.64,
+            "hotspot_pixels": 33
+          },
+          "sizes_mb": {
+            "raw_download": 36.31,
+            "cog": 0.287,
+            "png": 0.276
+          }
         }
       ],
       "hourly_composites": [
@@ -2931,6 +2964,28 @@
             "hotspot_threshold_c": 35.75,
             "hotspot_pixels": 530
           }
+        },
+        {
+          "hour_key": "20261031_1000",
+          "time_utc": "2026-10-31T10:00:00+00:00",
+          "frames_merged": 1,
+          "source_stamps": [
+            "20261031_1020"
+          ],
+          "cog_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1000_indonesia.tif",
+          "png_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1000_indonesia.png",
+          "stats": {
+            "land_pixels": 468010,
+            "clear_pixels": 84603,
+            "clear_fraction": 0.1808,
+            "min_c": 14.53,
+            "max_c": 35.66,
+            "mean_c": 27.69,
+            "std_c": 3.47,
+            "p95_c": 32.4,
+            "hotspot_threshold_c": 34.64,
+            "hotspot_pixels": 32
+          }
         }
       ],
       "daily_archive": [
@@ -3956,22 +4011,22 @@
         },
         {
           "date": "2026-10-31",
-          "frames_used": 15,
+          "frames_used": 16,
           "stats": {
             "date": "2026-10-31",
             "region": "indonesia",
-            "frames_used": 15,
+            "frames_used": 16,
             "land_pixels": 468010,
-            "clear_pixels": 226460,
-            "clear_fraction": 0.4839,
-            "coverage_fraction": 0.4839,
-            "mean_c": 28.2,
+            "clear_pixels": 241068,
+            "clear_fraction": 0.5151,
+            "coverage_fraction": 0.5151,
+            "mean_c": 28.0,
             "max_c": 47.12,
             "min_c": 14.5,
-            "std_c": 4.03,
-            "p95_c": 34.63,
-            "hotspot_threshold_c": 36.25,
-            "hotspot_pixels": 1907
+            "std_c": 3.91,
+            "p95_c": 34.11,
+            "hotspot_threshold_c": 35.81,
+            "hotspot_pixels": 1837
           },
           "layers": {
             "mean": {
@@ -5014,34 +5069,34 @@
           "date": "2026-10-31",
           "region": "indonesia",
           "product": "Gabungan Semua Satelit (Himawari-9 + VIIRS/Sentinel-3 + Landsat 8/9)",
-          "himawari_frames_merged": 15,
+          "himawari_frames_merged": 16,
           "landsat_cities_blended": [
             "Balikpapan & IKN Nusantara (Kalimantan Timur)",
             "Banjarmasin & Banjarbaru (Kalimantan Selatan)",
             "DKI Jakarta & Jabodetabek (Jawa)"
           ],
-          "direct_satellite_coverage_fraction": 0.4843,
-          "fused_coverage_fraction": 0.9794,
+          "direct_satellite_coverage_fraction": 0.5155,
+          "fused_coverage_fraction": 0.9886,
           "cog_url": "composites/fused/LST_FUSED_ALLSAT_20261031_indonesia.tif",
           "png_url": "composites/fused/LST_FUSED_ALLSAT_20261031_indonesia.png",
           "stats": {
             "land_pixels": 468010,
-            "clear_pixels": 458355,
-            "clear_fraction": 0.9794,
-            "direct_clear_fraction": 0.4843,
+            "clear_pixels": 462696,
+            "clear_fraction": 0.9886,
+            "direct_clear_fraction": 0.5155,
             "min_c": 14.5,
             "max_c": 58.0,
-            "mean_c": 27.59,
-            "std_c": 4.07,
-            "p05_c": 21.22,
-            "p50_c": 27.28,
-            "p95_c": 34.82,
-            "hotspot_threshold_c": 35.73,
-            "hotspot_pixels": 13596
+            "mean_c": 27.42,
+            "std_c": 4.05,
+            "p05_c": 20.98,
+            "p50_c": 27.12,
+            "p95_c": 34.49,
+            "hotspot_threshold_c": 35.52,
+            "hotspot_pixels": 13125
           },
           "sizes_mb": {
-            "cog": 0.981,
-            "png": 1.028
+            "cog": 0.993,
+            "png": 1.046
           }
         }
       ]
@@ -5055,8 +5110,8 @@
         7.5
       ],
       "res_deg": 0.02,
-      "frame_count": 55,
-      "latest": "2026-10-31T09:50:00+00:00",
+      "frame_count": 56,
+      "latest": "2026-10-31T10:20:00+00:00",
       "frames": [
         {
           "stamp": "20261001_0500",
@@ -6872,6 +6927,39 @@
             "cog": 0.03,
             "png": 0.028
           }
+        },
+        {
+          "stamp": "20261031_1020",
+          "time_utc": "2026-10-31T10:20:00+00:00",
+          "latency_min": 21.2,
+          "cog_url": "himawari/2026/10/31/LST_H09_20261031_1020_kalimantan.tif",
+          "png_url": "himawari/2026/10/31/LST_H09_20261031_1020_kalimantan.png",
+          "json_url": "himawari/2026/10/31/LST_H09_20261031_1020_kalimantan.json",
+          "stats": {
+            "land_pixels": 152335,
+            "clear_pixels": 8117,
+            "clear_fraction": 0.0533,
+            "cloud_tests_fraction": {
+              "cold": 0.8452,
+              "split_window": 0.2088,
+              "spatial": 0.5202,
+              "cloud": 0.9453
+            },
+            "min_c": 16.01,
+            "max_c": 33.18,
+            "mean_c": 26.23,
+            "std_c": 1.93,
+            "p05_c": 22.72,
+            "p50_c": 26.35,
+            "p95_c": 29.04,
+            "hotspot_threshold_c": 30.08,
+            "hotspot_pixels": 115
+          },
+          "sizes_mb": {
+            "raw_download": 24.21,
+            "cog": 0.033,
+            "png": 0.03
+          }
         }
       ],
       "hourly_composites": [
@@ -7937,6 +8025,28 @@
             "hotspot_threshold_c": 31.28,
             "hotspot_pixels": 236
           }
+        },
+        {
+          "hour_key": "20261031_1000",
+          "time_utc": "2026-10-31T10:00:00+00:00",
+          "frames_merged": 1,
+          "source_stamps": [
+            "20261031_1020"
+          ],
+          "cog_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1000_kalimantan.tif",
+          "png_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1000_kalimantan.png",
+          "stats": {
+            "land_pixels": 152335,
+            "clear_pixels": 8117,
+            "clear_fraction": 0.0533,
+            "min_c": 16.01,
+            "max_c": 33.18,
+            "mean_c": 26.23,
+            "std_c": 1.93,
+            "p95_c": 29.04,
+            "hotspot_threshold_c": 30.08,
+            "hotspot_pixels": 114
+          }
         }
       ],
       "daily_archive": [
@@ -8962,22 +9072,22 @@
         },
         {
           "date": "2026-10-31",
-          "frames_used": 16,
+          "frames_used": 17,
           "stats": {
             "date": "2026-10-31",
             "region": "kalimantan",
-            "frames_used": 16,
+            "frames_used": 17,
             "land_pixels": 152335,
-            "clear_pixels": 37764,
-            "clear_fraction": 0.2479,
-            "coverage_fraction": 0.2479,
-            "mean_c": 26.37,
+            "clear_pixels": 40880,
+            "clear_fraction": 0.2684,
+            "coverage_fraction": 0.2684,
+            "mean_c": 26.29,
             "max_c": 35.35,
             "min_c": 14.87,
-            "std_c": 2.97,
-            "p95_c": 30.45,
-            "hotspot_threshold_c": 32.32,
-            "hotspot_pixels": 208
+            "std_c": 2.88,
+            "p95_c": 30.3,
+            "hotspot_threshold_c": 32.06,
+            "hotspot_pixels": 265
           },
           "layers": {
             "mean": {
@@ -9990,33 +10100,33 @@
           "date": "2026-10-31",
           "region": "kalimantan",
           "product": "Gabungan Semua Satelit (Himawari-9 + VIIRS/Sentinel-3 + Landsat 8/9)",
-          "himawari_frames_merged": 16,
+          "himawari_frames_merged": 17,
           "landsat_cities_blended": [
             "Balikpapan & IKN Nusantara (Kalimantan Timur)",
             "Banjarmasin & Banjarbaru (Kalimantan Selatan)"
           ],
-          "direct_satellite_coverage_fraction": 0.2488,
-          "fused_coverage_fraction": 0.9727,
+          "direct_satellite_coverage_fraction": 0.2692,
+          "fused_coverage_fraction": 0.9793,
           "cog_url": "composites/fused/LST_FUSED_ALLSAT_20261031_kalimantan.tif",
           "png_url": "composites/fused/LST_FUSED_ALLSAT_20261031_kalimantan.png",
           "stats": {
             "land_pixels": 152335,
-            "clear_pixels": 148169,
-            "clear_fraction": 0.9727,
-            "direct_clear_fraction": 0.2488,
+            "clear_pixels": 149175,
+            "clear_fraction": 0.9793,
+            "direct_clear_fraction": 0.2692,
             "min_c": 14.5,
             "max_c": 58.0,
-            "mean_c": 26.42,
-            "std_c": 3.16,
-            "p05_c": 21.5,
-            "p50_c": 26.54,
-            "p95_c": 30.2,
-            "hotspot_threshold_c": 32.75,
-            "hotspot_pixels": 2197
+            "mean_c": 26.32,
+            "std_c": 3.12,
+            "p05_c": 21.48,
+            "p50_c": 26.45,
+            "p95_c": 30.09,
+            "hotspot_threshold_c": 32.57,
+            "hotspot_pixels": 2161
           },
           "sizes_mb": {
-            "cog": 0.263,
-            "png": 0.288
+            "cog": 0.266,
+            "png": 0.293
           }
         }
       ]
@@ -16532,313 +16642,53 @@
   },
   "analysis_indonesia": {
     "region": "indonesia",
-    "latest_stamp": "20261031_0940",
+    "latest_stamp": "20261031_1020",
     "peak_day_stamp": "20261031_0520",
     "frames_in_baseline": 16,
     "anomaly": {
-      "png_url": "analysis/indonesia/LST_ANOMALY_20261031_0940_indonesia.png",
-      "cog_url": "analysis/indonesia/LST_ANOMALY_20261031_0940_indonesia.tif",
+      "png_url": "analysis/indonesia/LST_ANOMALY_20261031_1020_indonesia.png",
+      "cog_url": "analysis/indonesia/LST_ANOMALY_20261031_1020_indonesia.tif",
       "vmin_c": -6.0,
       "vmax_c": 6.0,
-      "min_delta_c": -10.7,
-      "max_delta_c": 5.58,
-      "warm_anomaly_pixels_z2": 427,
-      "cool_anomaly_pixels_z2": 2891
+      "min_delta_c": -12.25,
+      "max_delta_c": 5.06,
+      "warm_anomaly_pixels_z2": 32,
+      "cool_anomaly_pixels_z2": 3416
     },
     "hotspots_latest": {
-      "regional_mean_c": 28.71,
-      "regional_std_c": 3.42,
-      "threshold_2sigma_c": 35.56,
-      "threshold_3sigma_c": 38.98,
-      "total_hotspot_pixels": 427,
-      "total_hotspot_area_km2": 2109.4,
-      "cluster_count": 22,
+      "regional_mean_c": 27.69,
+      "regional_std_c": 3.47,
+      "threshold_2sigma_c": 34.64,
+      "threshold_3sigma_c": 38.12,
+      "total_hotspot_pixels": 32,
+      "total_hotspot_area_km2": 158.1,
+      "cluster_count": 2,
       "clusters": [
         {
-          "cluster_id": 3,
+          "cluster_id": 1,
           "zone": "Pulau Sumatera",
-          "lat": -1.69,
-          "lon": 103.49,
-          "pixels": 132,
-          "area_km2": 652.1,
-          "max_c": 37.17,
-          "mean_c": 36.08,
-          "anomaly_vs_regional_mean_c": 8.46,
+          "lat": -1.65,
+          "lon": 103.53,
+          "pixels": 15,
+          "area_km2": 74.1,
+          "max_c": 35.58,
+          "mean_c": 35.05,
+          "anomaly_vs_regional_mean_c": 7.89,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 1
         },
         {
-          "cluster_id": 19,
-          "zone": "Pulau Jawa & Madura",
-          "lat": -7.13,
-          "lon": 112.83,
-          "pixels": 19,
-          "area_km2": 93.9,
-          "max_c": 37.01,
-          "mean_c": 36.08,
-          "anomaly_vs_regional_mean_c": 8.3,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 2
-        },
-        {
-          "cluster_id": 20,
-          "zone": "Pulau Jawa & Madura",
-          "lat": -7.17,
-          "lon": 113.55,
-          "pixels": 11,
-          "area_km2": 54.3,
-          "max_c": 36.9,
-          "mean_c": 36.09,
-          "anomaly_vs_regional_mean_c": 8.19,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 3
-        },
-        {
-          "cluster_id": 13,
-          "zone": "Pulau Sumatera",
-          "lat": -2.69,
-          "lon": 103.79,
-          "pixels": 132,
-          "area_km2": 652.1,
-          "max_c": 36.83,
-          "mean_c": 35.95,
-          "anomaly_vs_regional_mean_c": 8.12,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 4
-        },
-        {
-          "cluster_id": 21,
+          "cluster_id": 2,
           "zone": "Pulau Jawa & Madura",
           "lat": -7.67,
-          "lon": 113.03,
-          "pixels": 6,
-          "area_km2": 29.6,
-          "max_c": 36.75,
-          "mean_c": 36.46,
-          "anomaly_vs_regional_mean_c": 8.04,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 5
-        },
-        {
-          "cluster_id": 7,
-          "zone": "Pulau Sumatera",
-          "lat": -2.01,
-          "lon": 102.99,
-          "pixels": 18,
-          "area_km2": 88.9,
-          "max_c": 36.57,
-          "mean_c": 35.86,
-          "anomaly_vs_regional_mean_c": 7.86,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 6
-        },
-        {
-          "cluster_id": 6,
-          "zone": "Pulau Sumatera",
-          "lat": -1.85,
-          "lon": 103.95,
-          "pixels": 7,
-          "area_km2": 34.6,
-          "max_c": 36.41,
-          "mean_c": 35.95,
-          "anomaly_vs_regional_mean_c": 7.7,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 7
-        },
-        {
-          "cluster_id": 18,
-          "zone": "Pulau Jawa & Madura",
-          "lat": -7.07,
-          "lon": 113.79,
-          "pixels": 13,
-          "area_km2": 64.2,
-          "max_c": 36.39,
-          "mean_c": 35.89,
-          "anomaly_vs_regional_mean_c": 7.68,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 8
-        },
-        {
-          "cluster_id": 22,
-          "zone": "Pulau Jawa & Madura",
-          "lat": -7.77,
-          "lon": 114.35,
+          "lon": 113.01,
           "pixels": 2,
           "area_km2": 9.9,
-          "max_c": 36.32,
-          "mean_c": 36.24,
-          "anomaly_vs_regional_mean_c": 7.61,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 9
-        },
-        {
-          "cluster_id": 4,
-          "zone": "Pulau Sumatera",
-          "lat": -1.65,
-          "lon": 103.87,
-          "pixels": 2,
-          "area_km2": 9.9,
-          "max_c": 36.15,
-          "mean_c": 35.9,
-          "anomaly_vs_regional_mean_c": 7.44,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 10
-        },
-        {
-          "cluster_id": 1,
-          "zone": "Pulau Sumatera",
-          "lat": -1.37,
-          "lon": 104.09,
-          "pixels": 13,
-          "area_km2": 64.2,
-          "max_c": 36.13,
-          "mean_c": 35.74,
-          "anomaly_vs_regional_mean_c": 7.42,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 11
-        },
-        {
-          "cluster_id": 14,
-          "zone": "Pulau Sumatera",
-          "lat": -2.69,
-          "lon": 103.87,
-          "pixels": 7,
-          "area_km2": 34.6,
-          "max_c": 36.03,
-          "mean_c": 35.75,
-          "anomaly_vs_regional_mean_c": 7.32,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 12
-        },
-        {
-          "cluster_id": 2,
-          "zone": "Pulau Sumatera",
-          "lat": -1.61,
-          "lon": 103.43,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 35.85,
-          "mean_c": 35.75,
-          "anomaly_vs_regional_mean_c": 7.14,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 13
-        },
-        {
-          "cluster_id": 11,
-          "zone": "Pulau Sumatera",
-          "lat": -2.15,
-          "lon": 103.63,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 35.85,
-          "mean_c": 35.72,
-          "anomaly_vs_regional_mean_c": 7.14,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 14
-        },
-        {
-          "cluster_id": 17,
-          "zone": "Pulau Sumatera",
-          "lat": -2.85,
-          "lon": 104.09,
-          "pixels": 11,
-          "area_km2": 54.3,
-          "max_c": 35.81,
-          "mean_c": 35.69,
-          "anomaly_vs_regional_mean_c": 7.1,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 15
-        },
-        {
-          "cluster_id": 5,
-          "zone": "Pulau Sumatera",
-          "lat": -1.65,
-          "lon": 103.97,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 35.76,
-          "mean_c": 35.72,
+          "max_c": 34.74,
+          "mean_c": 34.7,
           "anomaly_vs_regional_mean_c": 7.05,
           "severity": "SIAGA (> μ+2σ)",
-          "rank": 16
-        },
-        {
-          "cluster_id": 8,
-          "zone": "Pulau Sumatera",
-          "lat": -2.05,
-          "lon": 103.11,
-          "pixels": 4,
-          "area_km2": 19.8,
-          "max_c": 35.76,
-          "mean_c": 35.67,
-          "anomaly_vs_regional_mean_c": 7.05,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 17
-        },
-        {
-          "cluster_id": 9,
-          "zone": "Pulau Sumatera",
-          "lat": -2.07,
-          "lon": 103.19,
-          "pixels": 5,
-          "area_km2": 24.7,
-          "max_c": 35.74,
-          "mean_c": 35.63,
-          "anomaly_vs_regional_mean_c": 7.03,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 18
-        },
-        {
-          "cluster_id": 15,
-          "zone": "Pulau Sumatera",
-          "lat": -2.83,
-          "lon": 103.59,
-          "pixels": 4,
-          "area_km2": 19.8,
-          "max_c": 35.74,
-          "mean_c": 35.65,
-          "anomaly_vs_regional_mean_c": 7.03,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 19
-        },
-        {
-          "cluster_id": 12,
-          "zone": "Pulau Sumatera",
-          "lat": -2.33,
-          "lon": 103.97,
-          "pixels": 2,
-          "area_km2": 9.9,
-          "max_c": 35.68,
-          "mean_c": 35.68,
-          "anomaly_vs_regional_mean_c": 6.97,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 20
-        },
-        {
-          "cluster_id": 10,
-          "zone": "Pulau Sumatera",
-          "lat": -2.09,
-          "lon": 103.67,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 35.66,
-          "mean_c": 35.64,
-          "anomaly_vs_regional_mean_c": 6.95,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 21
-        },
-        {
-          "cluster_id": 16,
-          "zone": "Pulau Sumatera",
-          "lat": -2.81,
-          "lon": 103.67,
-          "pixels": 2,
-          "area_km2": 9.9,
-          "max_c": 35.57,
-          "mean_c": 35.57,
-          "anomaly_vs_regional_mean_c": 6.86,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 22
+          "rank": 2
         }
       ]
     },
@@ -17609,6 +17459,23 @@
     },
     "zonal_latest": [
       {
+        "zone_id": "papua",
+        "name": "Tanah Papua",
+        "island": "Papua",
+        "bbox": [
+          130.0,
+          -9.2,
+          141.1,
+          -0.3
+        ],
+        "clear_pixels": 17494,
+        "min_c": 14.93,
+        "mean_c": 27.63,
+        "max_c": 35.66,
+        "p95_c": 31.51,
+        "hotspot_pixels": 1
+      },
+      {
         "zone_id": "sumatera",
         "name": "Pulau Sumatera",
         "island": "Sumatera",
@@ -17618,12 +17485,12 @@
           106.2,
           5.9
         ],
-        "clear_pixels": 15637,
-        "min_c": 15.06,
-        "mean_c": 29.98,
-        "max_c": 37.17,
-        "p95_c": 35.16,
-        "hotspot_pixels": 368
+        "clear_pixels": 20517,
+        "min_c": 14.69,
+        "mean_c": 29.15,
+        "max_c": 35.58,
+        "p95_c": 33.19,
+        "hotspot_pixels": 17
       },
       {
         "zone_id": "jawa",
@@ -17635,29 +17502,12 @@
           114.6,
           -5.8
         ],
-        "clear_pixels": 6578,
-        "min_c": 14.51,
-        "mean_c": 29.82,
-        "max_c": 37.01,
-        "p95_c": 34.48,
-        "hotspot_pixels": 57
-      },
-      {
-        "zone_id": "papua",
-        "name": "Tanah Papua",
-        "island": "Papua",
-        "bbox": [
-          130.0,
-          -9.2,
-          141.1,
-          -0.3
-        ],
-        "clear_pixels": 17761,
-        "min_c": 15.83,
-        "mean_c": 28.37,
-        "max_c": 36.05,
-        "p95_c": 32.04,
-        "hotspot_pixels": 1
+        "clear_pixels": 7707,
+        "min_c": 14.53,
+        "mean_c": 27.86,
+        "max_c": 35.1,
+        "p95_c": 32.87,
+        "hotspot_pixels": 9
       },
       {
         "zone_id": "sulawesi",
@@ -17669,12 +17519,12 @@
           125.3,
           1.8
         ],
-        "clear_pixels": 13299,
-        "min_c": 14.98,
-        "mean_c": 28.35,
-        "max_c": 35.87,
-        "p95_c": 33.38,
-        "hotspot_pixels": 1
+        "clear_pixels": 13854,
+        "min_c": 15.45,
+        "mean_c": 27.07,
+        "max_c": 34.94,
+        "p95_c": 32.16,
+        "hotspot_pixels": 5
       },
       {
         "zone_id": "bali_nusra",
@@ -17686,11 +17536,11 @@
           125.2,
           -8.0
         ],
-        "clear_pixels": 5688,
-        "min_c": 14.6,
-        "mean_c": 27.08,
-        "max_c": 34.86,
-        "p95_c": 31.72,
+        "clear_pixels": 7752,
+        "min_c": 14.96,
+        "mean_c": 25.92,
+        "max_c": 33.19,
+        "p95_c": 30.61,
         "hotspot_pixels": 0
       },
       {
@@ -17703,28 +17553,11 @@
           119.0,
           2.6
         ],
-        "clear_pixels": 2459,
-        "min_c": 20.48,
-        "mean_c": 27.34,
-        "max_c": 33.1,
-        "p95_c": 31.41,
-        "hotspot_pixels": 0
-      },
-      {
-        "zone_id": "kaltara",
-        "name": "Kalimantan Utara",
-        "island": "Kalimantan",
-        "bbox": [
-          114.5,
-          1.5,
-          118.0,
-          4.5
-        ],
-        "clear_pixels": 294,
-        "min_c": 22.54,
-        "mean_c": 26.59,
-        "max_c": 32.77,
-        "p95_c": 30.21,
+        "clear_pixels": 2192,
+        "min_c": 18.61,
+        "mean_c": 25.99,
+        "max_c": 33.18,
+        "p95_c": 29.76,
         "hotspot_pixels": 0
       },
       {
@@ -17737,11 +17570,28 @@
           134.9,
           2.7
         ],
-        "clear_pixels": 5625,
-        "min_c": 17.97,
-        "mean_c": 26.52,
-        "max_c": 32.58,
-        "p95_c": 30.35,
+        "clear_pixels": 7484,
+        "min_c": 14.93,
+        "mean_c": 25.28,
+        "max_c": 32.25,
+        "p95_c": 29.82,
+        "hotspot_pixels": 0
+      },
+      {
+        "zone_id": "kaltara",
+        "name": "Kalimantan Utara",
+        "island": "Kalimantan",
+        "bbox": [
+          114.5,
+          1.5,
+          118.0,
+          4.5
+        ],
+        "clear_pixels": 427,
+        "min_c": 18.61,
+        "mean_c": 24.32,
+        "max_c": 32.01,
+        "p95_c": 28.18,
         "hotspot_pixels": 0
       },
       {
@@ -17754,11 +17604,11 @@
           114.2,
           2.1
         ],
-        "clear_pixels": 4492,
-        "min_c": 19.78,
-        "mean_c": 27.27,
-        "max_c": 31.14,
-        "p95_c": 29.52,
+        "clear_pixels": 5746,
+        "min_c": 18.79,
+        "mean_c": 26.37,
+        "max_c": 30.34,
+        "p95_c": 28.91,
         "hotspot_pixels": 0
       },
       {
@@ -17771,11 +17621,28 @@
           115.8,
           0.8
         ],
-        "clear_pixels": 4124,
-        "min_c": 19.78,
-        "mean_c": 26.95,
-        "max_c": 30.27,
-        "p95_c": 29.23,
+        "clear_pixels": 4330,
+        "min_c": 18.79,
+        "mean_c": 25.83,
+        "max_c": 28.97,
+        "p95_c": 27.67,
+        "hotspot_pixels": 0
+      },
+      {
+        "zone_id": "kalsel",
+        "name": "Kalimantan Selatan",
+        "island": "Kalimantan",
+        "bbox": [
+          114.3,
+          -4.2,
+          116.6,
+          -1.3
+        ],
+        "clear_pixels": 2,
+        "min_c": 19.52,
+        "mean_c": 19.59,
+        "max_c": 19.66,
+        "p95_c": 19.65,
         "hotspot_pixels": 0
       }
     ],
@@ -17971,66 +17838,53 @@
   },
   "analysis_kalimantan": {
     "region": "kalimantan",
-    "latest_stamp": "20261031_0950",
+    "latest_stamp": "20261031_1020",
     "peak_day_stamp": "20261031_0750",
     "frames_in_baseline": 16,
     "anomaly": {
-      "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_0950_kalimantan.png",
-      "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_0950_kalimantan.tif",
+      "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_1020_kalimantan.png",
+      "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_1020_kalimantan.tif",
       "vmin_c": -6.0,
       "vmax_c": 6.0,
-      "min_delta_c": -5.61,
-      "max_delta_c": 3.96,
-      "warm_anomaly_pixels_z2": 176,
-      "cool_anomaly_pixels_z2": 224
+      "min_delta_c": -6.75,
+      "max_delta_c": 4.89,
+      "warm_anomaly_pixels_z2": 114,
+      "cool_anomaly_pixels_z2": 311
     },
     "hotspots_latest": {
-      "regional_mean_c": 27.19,
-      "regional_std_c": 1.81,
-      "threshold_2sigma_c": 30.81,
-      "threshold_3sigma_c": 32.62,
-      "total_hotspot_pixels": 176,
-      "total_hotspot_area_km2": 869.5,
-      "cluster_count": 12,
+      "regional_mean_c": 26.23,
+      "regional_std_c": 1.93,
+      "threshold_2sigma_c": 30.08,
+      "threshold_3sigma_c": 32.01,
+      "total_hotspot_pixels": 114,
+      "total_hotspot_area_km2": 563.2,
+      "cluster_count": 19,
       "clusters": [
         {
           "cluster_id": 8,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 1.33,
-          "lon": 118.63,
-          "pixels": 29,
-          "area_km2": 143.3,
-          "max_c": 33.04,
-          "mean_c": 32.06,
-          "anomaly_vs_regional_mean_c": 5.85,
+          "lat": 1.25,
+          "lon": 118.73,
+          "pixels": 27,
+          "area_km2": 133.4,
+          "max_c": 33.18,
+          "mean_c": 31.49,
+          "anomaly_vs_regional_mean_c": 6.95,
           "severity": "EKSTREM (> μ+3σ)",
           "rank": 1
         },
         {
-          "cluster_id": 9,
-          "zone": "Kalimantan Timur (IKN)",
-          "lat": 1.05,
-          "lon": 118.99,
-          "pixels": 19,
-          "area_km2": 93.9,
-          "max_c": 32.72,
-          "mean_c": 31.69,
-          "anomaly_vs_regional_mean_c": 5.53,
+          "cluster_id": 3,
+          "zone": "Kepulauan Indonesia Lainnya",
+          "lat": 4.71,
+          "lon": 119.41,
+          "pixels": 4,
+          "area_km2": 19.8,
+          "max_c": 32.02,
+          "mean_c": 31.76,
+          "anomaly_vs_regional_mean_c": 5.79,
           "severity": "EKSTREM (> μ+3σ)",
           "rank": 2
-        },
-        {
-          "cluster_id": 12,
-          "zone": "Kalimantan Timur (IKN)",
-          "lat": -0.83,
-          "lon": 117.45,
-          "pixels": 87,
-          "area_km2": 429.8,
-          "max_c": 32.7,
-          "mean_c": 31.57,
-          "anomaly_vs_regional_mean_c": 5.51,
-          "severity": "EKSTREM (> μ+3σ)",
-          "rank": 3
         },
         {
           "cluster_id": 5,
@@ -18039,115 +17893,219 @@
           "lon": 117.87,
           "pixels": 4,
           "area_km2": 19.8,
-          "max_c": 32.46,
-          "mean_c": 32.0,
-          "anomaly_vs_regional_mean_c": 5.27,
+          "max_c": 32.01,
+          "mean_c": 31.52,
+          "anomaly_vs_regional_mean_c": 5.78,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 3
+        },
+        {
+          "cluster_id": 13,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": 0.85,
+          "lon": 118.03,
+          "pixels": 4,
+          "area_km2": 19.8,
+          "max_c": 31.92,
+          "mean_c": 31.15,
+          "anomaly_vs_regional_mean_c": 5.69,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 4
         },
         {
-          "cluster_id": 6,
+          "cluster_id": 4,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 1.87,
-          "lon": 117.89,
-          "pixels": 5,
-          "area_km2": 24.7,
-          "max_c": 32.37,
-          "mean_c": 31.86,
-          "anomaly_vs_regional_mean_c": 5.18,
+          "lat": 2.25,
+          "lon": 118.59,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 31.84,
+          "mean_c": 31.05,
+          "anomaly_vs_regional_mean_c": 5.61,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 5
         },
         {
-          "cluster_id": 11,
+          "cluster_id": 19,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 0.85,
-          "lon": 118.03,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 32.16,
-          "mean_c": 31.8,
-          "anomaly_vs_regional_mean_c": 4.97,
+          "lat": -1.19,
+          "lon": 117.01,
+          "pixels": 12,
+          "area_km2": 59.3,
+          "max_c": 31.84,
+          "mean_c": 31.12,
+          "anomaly_vs_regional_mean_c": 5.61,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 6
         },
         {
-          "cluster_id": 1,
-          "zone": "Kepulauan Indonesia Lainnya",
-          "lat": 4.73,
-          "lon": 119.41,
-          "pixels": 2,
-          "area_km2": 9.9,
-          "max_c": 32.03,
-          "mean_c": 32.01,
-          "anomaly_vs_regional_mean_c": 4.84,
+          "cluster_id": 16,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": -0.87,
+          "lon": 117.45,
+          "pixels": 12,
+          "area_km2": 59.3,
+          "max_c": 31.74,
+          "mean_c": 31.16,
+          "anomaly_vs_regional_mean_c": 5.51,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 7
         },
         {
-          "cluster_id": 10,
+          "cluster_id": 6,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 0.83,
-          "lon": 118.83,
-          "pixels": 7,
-          "area_km2": 34.6,
-          "max_c": 31.91,
-          "mean_c": 31.28,
-          "anomaly_vs_regional_mean_c": 4.72,
+          "lat": 1.73,
+          "lon": 118.05,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 31.73,
+          "mean_c": 30.9,
+          "anomaly_vs_regional_mean_c": 5.5,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 8
         },
         {
-          "cluster_id": 7,
+          "cluster_id": 18,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 1.61,
-          "lon": 118.21,
-          "pixels": 2,
-          "area_km2": 9.9,
-          "max_c": 31.87,
-          "mean_c": 31.35,
-          "anomaly_vs_regional_mean_c": 4.68,
-          "severity": "SIAGA (> μ+2σ)",
-          "rank": 9
-        },
-        {
-          "cluster_id": 3,
-          "zone": "Kalimantan Timur (IKN)",
-          "lat": 2.31,
-          "lon": 118.09,
+          "lat": -0.95,
+          "lon": 117.19,
           "pixels": 4,
           "area_km2": 19.8,
-          "max_c": 31.62,
-          "mean_c": 31.28,
-          "anomaly_vs_regional_mean_c": 4.43,
+          "max_c": 31.61,
+          "mean_c": 30.91,
+          "anomaly_vs_regional_mean_c": 5.38,
           "severity": "SIAGA (> μ+2σ)",
-          "rank": 10
+          "rank": 9
         },
         {
           "cluster_id": 2,
           "zone": "Kepulauan Indonesia Lainnya",
           "lat": 4.73,
           "lon": 119.49,
-          "pixels": 3,
-          "area_km2": 14.8,
-          "max_c": 31.45,
-          "mean_c": 31.16,
-          "anomaly_vs_regional_mean_c": 4.26,
+          "pixels": 7,
+          "area_km2": 34.6,
+          "max_c": 31.35,
+          "mean_c": 30.73,
+          "anomaly_vs_regional_mean_c": 5.12,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 10
+        },
+        {
+          "cluster_id": 12,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": 0.89,
+          "lon": 118.91,
+          "pixels": 2,
+          "area_km2": 9.9,
+          "max_c": 31.26,
+          "mean_c": 30.84,
+          "anomaly_vs_regional_mean_c": 5.03,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 11
         },
         {
-          "cluster_id": 4,
+          "cluster_id": 11,
           "zone": "Kalimantan Timur (IKN)",
-          "lat": 2.15,
-          "lon": 117.93,
+          "lat": 1.05,
+          "lon": 118.99,
           "pixels": 2,
           "area_km2": 9.9,
-          "max_c": 31.0,
-          "mean_c": 30.99,
-          "anomaly_vs_regional_mean_c": 3.81,
+          "max_c": 31.1,
+          "mean_c": 30.81,
+          "anomaly_vs_regional_mean_c": 4.87,
           "severity": "SIAGA (> μ+2σ)",
           "rank": 12
+        },
+        {
+          "cluster_id": 7,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": 1.65,
+          "lon": 118.13,
+          "pixels": 2,
+          "area_km2": 9.9,
+          "max_c": 30.91,
+          "mean_c": 30.59,
+          "anomaly_vs_regional_mean_c": 4.68,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 13
+        },
+        {
+          "cluster_id": 10,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": 1.07,
+          "lon": 118.93,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 30.87,
+          "mean_c": 30.82,
+          "anomaly_vs_regional_mean_c": 4.64,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 14
+        },
+        {
+          "cluster_id": 9,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": 1.07,
+          "lon": 118.85,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 30.82,
+          "mean_c": 30.64,
+          "anomaly_vs_regional_mean_c": 4.59,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 15
+        },
+        {
+          "cluster_id": 1,
+          "zone": "Kepulauan Indonesia Lainnya",
+          "lat": 5.27,
+          "lon": 119.25,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 30.61,
+          "mean_c": 30.46,
+          "anomaly_vs_regional_mean_c": 4.38,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 16
+        },
+        {
+          "cluster_id": 17,
+          "zone": "Kalimantan Timur (IKN)",
+          "lat": -0.89,
+          "lon": 117.35,
+          "pixels": 3,
+          "area_km2": 14.8,
+          "max_c": 30.56,
+          "mean_c": 30.35,
+          "anomaly_vs_regional_mean_c": 4.33,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 17
+        },
+        {
+          "cluster_id": 15,
+          "zone": "Kalimantan Barat",
+          "lat": -0.05,
+          "lon": 110.01,
+          "pixels": 2,
+          "area_km2": 9.9,
+          "max_c": 30.34,
+          "mean_c": 30.34,
+          "anomaly_vs_regional_mean_c": 4.11,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 18
+        },
+        {
+          "cluster_id": 14,
+          "zone": "Kalimantan Barat",
+          "lat": -0.07,
+          "lon": 110.15,
+          "pixels": 4,
+          "area_km2": 19.8,
+          "max_c": 30.21,
+          "mean_c": 30.15,
+          "anomaly_vs_regional_mean_c": 3.98,
+          "severity": "SIAGA (> μ+2σ)",
+          "rank": 19
         }
       ]
     },
@@ -18212,29 +18170,12 @@
           119.0,
           2.6
         ],
-        "clear_pixels": 2352,
-        "min_c": 20.6,
-        "mean_c": 27.16,
-        "max_c": 33.04,
-        "p95_c": 31.29,
-        "hotspot_pixels": 168
-      },
-      {
-        "zone_id": "sulawesi",
-        "name": "Pulau Sulawesi",
-        "island": "Sulawesi",
-        "bbox": [
-          118.8,
-          -5.8,
-          125.3,
-          1.8
-        ],
-        "clear_pixels": 130,
-        "min_c": 26.09,
-        "mean_c": 29.51,
-        "max_c": 32.72,
-        "p95_c": 32.01,
-        "hotspot_pixels": 34
+        "clear_pixels": 2192,
+        "min_c": 18.61,
+        "mean_c": 25.99,
+        "max_c": 33.18,
+        "p95_c": 29.76,
+        "hotspot_pixels": 90
       },
       {
         "zone_id": "kaltara",
@@ -18246,12 +18187,29 @@
           118.0,
           4.5
         ],
-        "clear_pixels": 258,
-        "min_c": 21.47,
-        "mean_c": 26.29,
-        "max_c": 32.46,
-        "p95_c": 30.51,
-        "hotspot_pixels": 11
+        "clear_pixels": 427,
+        "min_c": 18.61,
+        "mean_c": 24.32,
+        "max_c": 32.01,
+        "p95_c": 28.18,
+        "hotspot_pixels": 6
+      },
+      {
+        "zone_id": "sulawesi",
+        "name": "Pulau Sulawesi",
+        "island": "Sulawesi",
+        "bbox": [
+          118.8,
+          -5.8,
+          125.3,
+          1.8
+        ],
+        "clear_pixels": 151,
+        "min_c": 16.01,
+        "mean_c": 25.96,
+        "max_c": 31.45,
+        "p95_c": 30.6,
+        "hotspot_pixels": 14
       },
       {
         "zone_id": "kalbar",
@@ -18263,12 +18221,12 @@
           114.2,
           2.1
         ],
-        "clear_pixels": 4792,
-        "min_c": 19.18,
-        "mean_c": 27.19,
-        "max_c": 31.37,
-        "p95_c": 29.47,
-        "hotspot_pixels": 2
+        "clear_pixels": 5746,
+        "min_c": 18.79,
+        "mean_c": 26.37,
+        "max_c": 30.34,
+        "p95_c": 28.91,
+        "hotspot_pixels": 7
       },
       {
         "zone_id": "kalteng",
@@ -18280,11 +18238,28 @@
           115.8,
           0.8
         ],
-        "clear_pixels": 4174,
-        "min_c": 19.18,
-        "mean_c": 26.77,
-        "max_c": 30.0,
-        "p95_c": 28.76,
+        "clear_pixels": 4330,
+        "min_c": 18.79,
+        "mean_c": 25.83,
+        "max_c": 28.97,
+        "p95_c": 27.67,
+        "hotspot_pixels": 0
+      },
+      {
+        "zone_id": "kalsel",
+        "name": "Kalimantan Selatan",
+        "island": "Kalimantan",
+        "bbox": [
+          114.3,
+          -4.2,
+          116.6,
+          -1.3
+        ],
+        "clear_pixels": 2,
+        "min_c": 19.52,
+        "mean_c": 19.59,
+        "max_c": 19.66,
+        "p95_c": 19.65,
         "hotspot_pixels": 0
       }
     ],

@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T15:10:00+00:00",
-  "scan_start_utc": "2026-10-31T15:10:00",
-  "processed_utc": "2026-10-31T15:24:23+00:00",
-  "latency_min": 14.4,
+  "time_utc": "2026-10-31T15:40:00+00:00",
+  "scan_start_utc": "2026-10-31T15:40:00",
+  "processed_utc": "2026-10-31T15:58:06+00:00",
+  "latency_min": 18.1,
   "region": "kalimantan",
   "bbox": [
     108.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_1510_kalimantan.tif",
-    "png": "LST_H09_20261031_1510_kalimantan.png"
+    "cog": "LST_H09_20261031_1540_kalimantan.tif",
+    "png": "LST_H09_20261031_1540_kalimantan.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -94,37 +94,37 @@
   },
   "stats": {
     "land_pixels": 152335,
-    "clear_pixels": 12256,
-    "clear_fraction": 0.0805,
+    "clear_pixels": 13127,
+    "clear_fraction": 0.0862,
     "cloud_tests_fraction": {
-      "cold": 0.824,
-      "split_window": 0.2049,
-      "spatial": 0.4498,
-      "cloud": 0.9123
+      "cold": 0.8076,
+      "split_window": 0.2038,
+      "spatial": 0.4358,
+      "cloud": 0.901
     },
-    "min_c": 16.45,
-    "max_c": 31.4,
-    "mean_c": 24.04,
-    "std_c": 1.66,
-    "p05_c": 21.43,
-    "p50_c": 24.16,
-    "p95_c": 26.58,
-    "hotspot_threshold_c": 27.36,
-    "hotspot_pixels": 247
+    "min_c": 16.54,
+    "max_c": 31.41,
+    "mean_c": 23.9,
+    "std_c": 1.79,
+    "p05_c": 20.84,
+    "p50_c": 24.04,
+    "p95_c": 26.6,
+    "hotspot_threshold_c": 27.48,
+    "hotspot_pixels": 249
   },
   "sizes_mb": {
     "raw_download": 24.21,
-    "cog": 0.043,
-    "png": 0.039
+    "cog": 0.047,
+    "png": 0.044
   },
   "timing_s": {
-    "cari_frame": 0.18,
+    "cari_frame": 0.38,
     "unduh": 0.0,
-    "baca+resample": 1.7,
-    "cloudmask": 0.03,
-    "hitung_lst": 0.01,
-    "tulis": 0.07,
-    "total": 2.0
+    "baca+resample": 1.59,
+    "cloudmask": 0.02,
+    "hitung_lst": 0.0,
+    "tulis": 0.08,
+    "total": 2.08
   },
   "pipeline_version": "0.1.0"
 }

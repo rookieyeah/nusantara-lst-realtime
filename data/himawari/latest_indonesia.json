@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T23:00:00+00:00",
-  "scan_start_utc": "2026-10-31T23:00:00",
-  "processed_utc": "2026-10-31T23:15:10+00:00",
-  "latency_min": 15.2,
+  "time_utc": "2026-10-31T23:30:00+00:00",
+  "scan_start_utc": "2026-10-31T23:30:00",
+  "processed_utc": "2026-10-31T23:44:11+00:00",
+  "latency_min": 14.2,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_2300_indonesia.tif",
-    "png": "LST_H09_20261031_2300_indonesia.png"
+    "cog": "LST_H09_20261031_2330_indonesia.tif",
+    "png": "LST_H09_20261031_2330_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 171277,
-    "clear_fraction": 0.366,
+    "clear_pixels": 167370,
+    "clear_fraction": 0.3576,
     "cloud_tests_fraction": {
-      "cold": 0.5008,
-      "split_window": 0.1544,
-      "spatial": 0.2995,
-      "cloud": 0.6079
+      "cold": 0.4891,
+      "split_window": 0.1823,
+      "spatial": 0.3112,
+      "cloud": 0.6205
     },
-    "min_c": 14.54,
-    "max_c": 43.43,
-    "mean_c": 25.99,
-    "std_c": 3.32,
-    "p05_c": 20.4,
-    "p50_c": 25.96,
-    "p95_c": 31.69,
-    "hotspot_threshold_c": 32.63,
-    "hotspot_pixels": 5066
+    "min_c": 14.51,
+    "max_c": 45.71,
+    "mean_c": 26.74,
+    "std_c": 3.6,
+    "p05_c": 20.83,
+    "p50_c": 26.65,
+    "p95_c": 33.23,
+    "hotspot_threshold_c": 33.94,
+    "hotspot_pixels": 6085
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.462,
+    "cog": 0.456,
     "png": 0.469
   },
   "timing_s": {
-    "cari_frame": 0.17,
-    "unduh": 0.85,
-    "baca+resample": 3.68,
-    "cloudmask": 0.11,
-    "hitung_lst": 0.02,
-    "tulis": 0.58,
-    "total": 5.43
+    "cari_frame": 0.44,
+    "unduh": 2.02,
+    "baca+resample": 3.72,
+    "cloudmask": 0.12,
+    "hitung_lst": 0.03,
+    "tulis": 0.59,
+    "total": 6.92
   },
   "pipeline_version": "0.1.0"
 }

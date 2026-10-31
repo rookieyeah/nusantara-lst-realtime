@@ -1,52 +1,39 @@
 {
   "region": "kalimantan",
-  "latest_stamp": "20261031_0000",
+  "latest_stamp": "20261031_0010",
   "peak_day_stamp": "20261030_0800",
   "frames_in_baseline": 16,
   "anomaly": {
-    "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_0000_kalimantan.png",
-    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_0000_kalimantan.tif",
+    "png_url": "analysis/kalimantan/LST_ANOMALY_20261031_0010_kalimantan.png",
+    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261031_0010_kalimantan.tif",
     "vmin_c": -6.0,
     "vmax_c": 6.0,
-    "min_delta_c": -8.57,
-    "max_delta_c": 5.88,
-    "warm_anomaly_pixels_z2": 8,
-    "cool_anomaly_pixels_z2": 368
+    "min_delta_c": -8.95,
+    "max_delta_c": 5.91,
+    "warm_anomaly_pixels_z2": 5,
+    "cool_anomaly_pixels_z2": 267
   },
   "hotspots_latest": {
-    "regional_mean_c": 25.92,
-    "regional_std_c": 3.54,
-    "threshold_2sigma_c": 33.0,
-    "threshold_3sigma_c": 36.54,
-    "total_hotspot_pixels": 8,
-    "total_hotspot_area_km2": 39.5,
-    "cluster_count": 2,
+    "regional_mean_c": 25.87,
+    "regional_std_c": 3.65,
+    "threshold_2sigma_c": 33.16,
+    "threshold_3sigma_c": 36.81,
+    "total_hotspot_pixels": 5,
+    "total_hotspot_area_km2": 24.7,
+    "cluster_count": 1,
     "clusters": [
-      {
-        "cluster_id": 2,
-        "zone": "Kalimantan Timur (IKN)",
-        "lat": 0.61,
-        "lon": 117.61,
-        "pixels": 3,
-        "area_km2": 14.8,
-        "max_c": 33.83,
-        "mean_c": 33.32,
-        "anomaly_vs_regional_mean_c": 7.91,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 1
-      },
       {
         "cluster_id": 1,
         "zone": "Kalimantan Timur (IKN)",
-        "lat": 1.63,
-        "lon": 118.15,
+        "lat": 0.51,
+        "lon": 117.57,
         "pixels": 2,
         "area_km2": 9.9,
-        "max_c": 33.09,
-        "mean_c": 33.09,
-        "anomaly_vs_regional_mean_c": 7.17,
+        "max_c": 33.43,
+        "mean_c": 33.35,
+        "anomaly_vs_regional_mean_c": 7.56,
         "severity": "SIAGA (> μ+2σ)",
-        "rank": 2
+        "rank": 1
       }
     ]
   },
@@ -384,12 +371,12 @@
         119.0,
         2.6
       ],
-      "clear_pixels": 6185,
-      "min_c": 14.87,
-      "mean_c": 26.61,
-      "max_c": 33.83,
-      "p95_c": 31.39,
-      "hotspot_pixels": 8
+      "clear_pixels": 5449,
+      "min_c": 15.69,
+      "mean_c": 26.79,
+      "max_c": 34.41,
+      "p95_c": 31.59,
+      "hotspot_pixels": 5
     },
     {
       "zone_id": "kaltara",
@@ -401,11 +388,11 @@
         118.0,
         4.5
       ],
-      "clear_pixels": 4047,
-      "min_c": 14.87,
-      "mean_c": 24.35,
-      "max_c": 32.43,
-      "p95_c": 30.86,
+      "clear_pixels": 3308,
+      "min_c": 15.49,
+      "mean_c": 23.85,
+      "max_c": 32.74,
+      "p95_c": 30.89,
       "hotspot_pixels": 0
     },
     {
@@ -418,11 +405,11 @@
         125.3,
         1.8
       ],
-      "clear_pixels": 1299,
-      "min_c": 16.19,
-      "mean_c": 25.24,
-      "max_c": 31.88,
-      "p95_c": 30.33,
+      "clear_pixels": 1167,
+      "min_c": 15.56,
+      "mean_c": 25.48,
+      "max_c": 31.87,
+      "p95_c": 30.72,
       "hotspot_pixels": 0
     },
     {
@@ -435,11 +422,11 @@
         114.2,
         2.1
       ],
-      "clear_pixels": 116,
-      "min_c": 21.21,
-      "mean_c": 29.29,
-      "max_c": 31.23,
-      "p95_c": 30.75,
+      "clear_pixels": 68,
+      "min_c": 20.08,
+      "mean_c": 28.08,
+      "max_c": 31.04,
+      "p95_c": 30.77,
       "hotspot_pixels": 0
     },
     {
@@ -452,11 +439,11 @@
         115.8,
         0.8
       ],
-      "clear_pixels": 125,
-      "min_c": 21.03,
-      "mean_c": 29.01,
-      "max_c": 31.23,
-      "p95_c": 30.73,
+      "clear_pixels": 77,
+      "min_c": 19.67,
+      "mean_c": 27.53,
+      "max_c": 31.04,
+      "p95_c": 30.76,
       "hotspot_pixels": 0
     },
     {
@@ -469,11 +456,11 @@
         116.6,
         -1.3
       ],
-      "clear_pixels": 104,
-      "min_c": 20.78,
-      "mean_c": 24.64,
-      "max_c": 28.19,
-      "p95_c": 27.47,
+      "clear_pixels": 111,
+      "min_c": 19.67,
+      "mean_c": 24.25,
+      "max_c": 28.35,
+      "p95_c": 27.4,
       "hotspot_pixels": 0
     }
   ],

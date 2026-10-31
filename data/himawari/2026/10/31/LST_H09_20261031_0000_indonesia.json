@@ -2,8 +2,8 @@
   "source": "himawari9",
   "time_utc": "2026-10-31T00:00:00+00:00",
   "scan_start_utc": "2026-10-31T00:00:00",
-  "processed_utc": "2026-10-31T00:14:58+00:00",
-  "latency_min": 15.0,
+  "processed_utc": "2026-10-31T00:24:00+00:00",
+  "latency_min": 24.0,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -115,17 +115,17 @@
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.391,
-    "png": 0.377
+    "cog": 0.38,
+    "png": 0.379
   },
   "timing_s": {
-    "cari_frame": 1.78,
-    "unduh": 5.76,
-    "baca+resample": 3.02,
-    "cloudmask": 0.15,
-    "hitung_lst": 0.05,
-    "tulis": 0.39,
-    "total": 11.16
+    "cari_frame": 0.62,
+    "unduh": 1.67,
+    "baca+resample": 3.13,
+    "cloudmask": 0.1,
+    "hitung_lst": 0.02,
+    "tulis": 0.43,
+    "total": 5.97
   },
   "pipeline_version": "0.1.0"
 }

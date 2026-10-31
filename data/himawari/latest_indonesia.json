@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-10-31T12:00:00+00:00",
-  "scan_start_utc": "2026-10-31T12:00:00",
-  "processed_utc": "2026-10-31T12:15:29+00:00",
-  "latency_min": 15.5,
+  "time_utc": "2026-10-31T12:40:00+00:00",
+  "scan_start_utc": "2026-10-31T12:40:00",
+  "processed_utc": "2026-10-31T12:58:50+00:00",
+  "latency_min": 18.8,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261031_1200_indonesia.tif",
-    "png": "LST_H09_20261031_1200_indonesia.png"
+    "cog": "LST_H09_20261031_1240_indonesia.tif",
+    "png": "LST_H09_20261031_1240_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 99286,
-    "clear_fraction": 0.2121,
+    "clear_pixels": 93992,
+    "clear_fraction": 0.2008,
     "cloud_tests_fraction": {
-      "cold": 0.6565,
-      "split_window": 0.1632,
-      "spatial": 0.436,
-      "cloud": 0.7756
+      "cold": 0.6632,
+      "split_window": 0.1744,
+      "spatial": 0.4364,
+      "cloud": 0.7859
     },
-    "min_c": 14.54,
-    "max_c": 36.0,
-    "mean_c": 26.44,
-    "std_c": 3.11,
-    "p05_c": 20.45,
-    "p50_c": 26.96,
-    "p95_c": 30.52,
-    "hotspot_threshold_c": 32.65,
-    "hotspot_pixels": 144
+    "min_c": 14.5,
+    "max_c": 34.29,
+    "mean_c": 26.12,
+    "std_c": 3.0,
+    "p05_c": 20.41,
+    "p50_c": 26.57,
+    "p95_c": 30.13,
+    "hotspot_threshold_c": 32.11,
+    "hotspot_pixels": 237
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.316,
-    "png": 0.316
+    "cog": 0.305,
+    "png": 0.303
   },
   "timing_s": {
-    "cari_frame": 0.48,
-    "unduh": 1.79,
-    "baca+resample": 3.64,
-    "cloudmask": 0.12,
+    "cari_frame": 0.39,
+    "unduh": 1.12,
+    "baca+resample": 2.15,
+    "cloudmask": 0.08,
     "hitung_lst": 0.02,
-    "tulis": 0.44,
-    "total": 6.5
+    "tulis": 0.26,
+    "total": 4.02
   },
   "pipeline_version": "0.1.0"
 }

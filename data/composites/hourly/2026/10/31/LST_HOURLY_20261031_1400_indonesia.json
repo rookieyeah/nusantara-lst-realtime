@@ -1,22 +1,23 @@
 {
   "hour_key": "20261031_1400",
   "time_utc": "2026-10-31T14:00:00+00:00",
-  "frames_merged": 1,
+  "frames_merged": 2,
   "source_stamps": [
-    "20261031_1400"
+    "20261031_1400",
+    "20261031_1430"
   ],
   "cog_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1400_indonesia.tif",
   "png_url": "composites/hourly/2026/10/31/LST_HOURLY_20261031_1400_indonesia.png",
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 91577,
-    "clear_fraction": 0.1957,
+    "clear_pixels": 117894,
+    "clear_fraction": 0.2519,
     "min_c": 14.53,
-    "max_c": 34.3,
-    "mean_c": 25.61,
-    "std_c": 2.84,
-    "p95_c": 29.37,
-    "hotspot_threshold_c": 31.29,
-    "hotspot_pixels": 317
+    "max_c": 33.69,
+    "mean_c": 25.33,
+    "std_c": 2.82,
+    "p95_c": 29.15,
+    "hotspot_threshold_c": 30.98,
+    "hotspot_pixels": 557
   }
 }

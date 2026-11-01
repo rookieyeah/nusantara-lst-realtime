@@ -1,0 +1,22 @@
+{
+  "hour_key": "20261101_1000",
+  "time_utc": "2026-11-01T10:00:00+00:00",
+  "frames_merged": 1,
+  "source_stamps": [
+    "20261101_1030"
+  ],
+  "cog_url": "composites/hourly/2026/11/01/LST_HOURLY_20261101_1000_kalimantan.tif",
+  "png_url": "composites/hourly/2026/11/01/LST_HOURLY_20261101_1000_kalimantan.png",
+  "stats": {
+    "land_pixels": 152335,
+    "clear_pixels": 28395,
+    "clear_fraction": 0.1864,
+    "min_c": 15.53,
+    "max_c": 33.57,
+    "mean_c": 28.28,
+    "std_c": 2.73,
+    "p95_c": 31.66,
+    "hotspot_threshold_c": 33.74,
+    "hotspot_pixels": 0
+  }
+}

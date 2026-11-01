@@ -1,175 +1,39 @@
 {
   "region": "kalimantan",
-  "latest_stamp": "20261101_0820",
-  "peak_day_stamp": "20261101_0640",
+  "latest_stamp": "20261101_0910",
+  "peak_day_stamp": "20261101_0910",
   "frames_in_baseline": 16,
   "anomaly": {
-    "png_url": "analysis/kalimantan/LST_ANOMALY_20261101_0820_kalimantan.png",
-    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261101_0820_kalimantan.tif",
+    "png_url": "analysis/kalimantan/LST_ANOMALY_20261101_0910_kalimantan.png",
+    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261101_0910_kalimantan.tif",
     "vmin_c": -6.0,
     "vmax_c": 6.0,
-    "min_delta_c": -6.63,
-    "max_delta_c": 7.52,
-    "warm_anomaly_pixels_z2": 62,
-    "cool_anomaly_pixels_z2": 114
+    "min_delta_c": -8.06,
+    "max_delta_c": 7.12,
+    "warm_anomaly_pixels_z2": 0,
+    "cool_anomaly_pixels_z2": 222
   },
   "hotspots_latest": {
-    "regional_mean_c": 27.48,
-    "regional_std_c": 3.07,
-    "threshold_2sigma_c": 33.63,
-    "threshold_3sigma_c": 36.7,
-    "total_hotspot_pixels": 62,
-    "total_hotspot_area_km2": 306.3,
-    "cluster_count": 8,
-    "clusters": [
-      {
-        "cluster_id": 5,
-        "zone": "Kalimantan Selatan",
-        "lat": -3.75,
-        "lon": 116.21,
-        "pixels": 19,
-        "area_km2": 93.9,
-        "max_c": 35.15,
-        "mean_c": 34.31,
-        "anomaly_vs_regional_mean_c": 7.67,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 1
-      },
-      {
-        "cluster_id": 4,
-        "zone": "Kalimantan Selatan",
-        "lat": -3.21,
-        "lon": 116.17,
-        "pixels": 8,
-        "area_km2": 39.5,
-        "max_c": 35.05,
-        "mean_c": 34.44,
-        "anomaly_vs_regional_mean_c": 7.57,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 2
-      },
-      {
-        "cluster_id": 6,
-        "zone": "Kalimantan Selatan",
-        "lat": -3.95,
-        "lon": 116.19,
-        "pixels": 7,
-        "area_km2": 34.6,
-        "max_c": 34.62,
-        "mean_c": 34.12,
-        "anomaly_vs_regional_mean_c": 7.14,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 3
-      },
-      {
-        "cluster_id": 1,
-        "zone": "Kalimantan Barat",
-        "lat": -2.25,
-        "lon": 112.97,
-        "pixels": 5,
-        "area_km2": 24.7,
-        "max_c": 34.47,
-        "mean_c": 34.28,
-        "anomaly_vs_regional_mean_c": 6.99,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 4
-      },
-      {
-        "cluster_id": 8,
-        "zone": "Kalimantan Selatan",
-        "lat": -4.09,
-        "lon": 114.75,
-        "pixels": 8,
-        "area_km2": 39.5,
-        "max_c": 34.37,
-        "mean_c": 33.89,
-        "anomaly_vs_regional_mean_c": 6.89,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 5
-      },
-      {
-        "cluster_id": 7,
-        "zone": "Kalimantan Selatan",
-        "lat": -3.97,
-        "lon": 114.71,
-        "pixels": 2,
-        "area_km2": 9.9,
-        "max_c": 34.19,
-        "mean_c": 34.14,
-        "anomaly_vs_regional_mean_c": 6.71,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 6
-      },
-      {
-        "cluster_id": 2,
-        "zone": "Kalimantan Barat",
-        "lat": -2.29,
-        "lon": 113.17,
-        "pixels": 5,
-        "area_km2": 24.7,
-        "max_c": 33.87,
-        "mean_c": 33.85,
-        "anomaly_vs_regional_mean_c": 6.39,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 7
-      },
-      {
-        "cluster_id": 3,
-        "zone": "Kalimantan Barat",
-        "lat": -2.45,
-        "lon": 113.89,
-        "pixels": 2,
-        "area_km2": 9.9,
-        "max_c": 33.66,
-        "mean_c": 33.66,
-        "anomaly_vs_regional_mean_c": 6.18,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 8
-      }
-    ]
+    "regional_mean_c": 28.98,
+    "regional_std_c": 3.55,
+    "threshold_2sigma_c": 36.07,
+    "threshold_3sigma_c": 39.62,
+    "total_hotspot_pixels": 0,
+    "total_hotspot_area_km2": 0.0,
+    "cluster_count": 0,
+    "clusters": []
   },
   "hotspots_peak_day": {
-    "regional_mean_c": 27.58,
-    "regional_std_c": 3.0,
-    "threshold_2sigma_c": 33.58,
-    "threshold_3sigma_c": 36.59,
-    "total_hotspot_pixels": 5,
-    "total_hotspot_area_km2": 24.7,
-    "cluster_count": 1,
-    "clusters": [
-      {
-        "cluster_id": 1,
-        "zone": "Kalimantan Barat",
-        "lat": 0.11,
-        "lon": 114.19,
-        "pixels": 2,
-        "area_km2": 9.9,
-        "max_c": 33.87,
-        "mean_c": 33.81,
-        "anomaly_vs_regional_mean_c": 6.29,
-        "severity": "SIAGA (> μ+2σ)",
-        "rank": 1
-      }
-    ]
+    "regional_mean_c": 28.98,
+    "regional_std_c": 3.55,
+    "threshold_2sigma_c": 36.07,
+    "threshold_3sigma_c": 39.62,
+    "total_hotspot_pixels": 0,
+    "total_hotspot_area_km2": 0.0,
+    "cluster_count": 0,
+    "clusters": []
   },
   "zonal_latest": [
-    {
-      "zone_id": "kalsel",
-      "name": "Kalimantan Selatan",
-      "island": "Kalimantan",
-      "bbox": [
-        114.3,
-        -4.2,
-        116.6,
-        -1.3
-      ],
-      "clear_pixels": 192,
-      "min_c": 24.21,
-      "mean_c": 31.58,
-      "max_c": 35.15,
-      "p95_c": 34.53,
-      "hotspot_pixels": 46
-    },
     {
       "zone_id": "kalbar",
       "name": "Kalimantan Barat",
@@ -180,12 +44,12 @@
         114.2,
         2.1
       ],
-      "clear_pixels": 1244,
-      "min_c": 19.67,
-      "mean_c": 29.19,
-      "max_c": 34.47,
-      "p95_c": 32.64,
-      "hotspot_pixels": 14
+      "clear_pixels": 4187,
+      "min_c": 18.45,
+      "mean_c": 30.66,
+      "max_c": 35.61,
+      "p95_c": 34.17,
+      "hotspot_pixels": 0
     },
     {
       "zone_id": "kalteng",
@@ -197,12 +61,12 @@
         115.8,
         0.8
       ],
-      "clear_pixels": 442,
-      "min_c": 20.09,
-      "mean_c": 29.61,
-      "max_c": 34.47,
-      "p95_c": 33.49,
-      "hotspot_pixels": 16
+      "clear_pixels": 2558,
+      "min_c": 20.1,
+      "mean_c": 31.97,
+      "max_c": 35.61,
+      "p95_c": 34.39,
+      "hotspot_pixels": 0
     },
     {
       "zone_id": "kaltim",
@@ -214,28 +78,28 @@
         119.0,
         2.6
       ],
-      "clear_pixels": 2254,
-      "min_c": 17.79,
-      "mean_c": 26.85,
-      "max_c": 33.66,
-      "p95_c": 30.92,
-      "hotspot_pixels": 2
+      "clear_pixels": 2587,
+      "min_c": 17.21,
+      "mean_c": 26.9,
+      "max_c": 34.71,
+      "p95_c": 33.16,
+      "hotspot_pixels": 0
     },
     {
-      "zone_id": "kaltara",
-      "name": "Kalimantan Utara",
+      "zone_id": "kalsel",
+      "name": "Kalimantan Selatan",
       "island": "Kalimantan",
       "bbox": [
-        114.5,
-        1.5,
-        118.0,
-        4.5
+        114.3,
+        -4.2,
+        116.6,
+        -1.3
       ],
-      "clear_pixels": 958,
-      "min_c": 17.75,
-      "mean_c": 25.41,
-      "max_c": 31.77,
-      "p95_c": 29.43,
+      "clear_pixels": 666,
+      "min_c": 22.38,
+      "mean_c": 30.64,
+      "max_c": 34.46,
+      "p95_c": 32.81,
       "hotspot_pixels": 0
     },
     {
@@ -248,33 +112,33 @@
         125.3,
         1.8
       ],
-      "clear_pixels": 35,
-      "min_c": 22.61,
-      "mean_c": 27.2,
-      "max_c": 31.56,
-      "p95_c": 31.09,
+      "clear_pixels": 62,
+      "min_c": 16.62,
+      "mean_c": 23.69,
+      "max_c": 31.24,
+      "p95_c": 30.2,
+      "hotspot_pixels": 0
+    },
+    {
+      "zone_id": "kaltara",
+      "name": "Kalimantan Utara",
+      "island": "Kalimantan",
+      "bbox": [
+        114.5,
+        1.5,
+        118.0,
+        4.5
+      ],
+      "clear_pixels": 797,
+      "min_c": 18.56,
+      "mean_c": 25.79,
+      "max_c": 30.55,
+      "p95_c": 28.74,
       "hotspot_pixels": 0
     }
   ],
   "zonal_peak_day": [
     {
-      "zone_id": "kalteng",
-      "name": "Kalimantan Tengah",
-      "island": "Kalimantan",
-      "bbox": [
-        110.7,
-        -3.5,
-        115.8,
-        0.8
-      ],
-      "clear_pixels": 335,
-      "min_c": 19.31,
-      "mean_c": 28.26,
-      "max_c": 34.13,
-      "p95_c": 33.11,
-      "hotspot_pixels": 4
-    },
-    {
       "zone_id": "kalbar",
       "name": "Kalimantan Barat",
       "island": "Kalimantan",
@@ -284,12 +148,29 @@
         114.2,
         2.1
       ],
-      "clear_pixels": 873,
-      "min_c": 19.31,
-      "mean_c": 28.23,
-      "max_c": 33.87,
-      "p95_c": 31.97,
-      "hotspot_pixels": 3
+      "clear_pixels": 4187,
+      "min_c": 18.45,
+      "mean_c": 30.66,
+      "max_c": 35.61,
+      "p95_c": 34.17,
+      "hotspot_pixels": 0
+    },
+    {
+      "zone_id": "kalteng",
+      "name": "Kalimantan Tengah",
+      "island": "Kalimantan",
+      "bbox": [
+        110.7,
+        -3.5,
+        115.8,
+        0.8
+      ],
+      "clear_pixels": 2558,
+      "min_c": 20.1,
+      "mean_c": 31.97,
+      "max_c": 35.61,
+      "p95_c": 34.39,
+      "hotspot_pixels": 0
     },
     {
       "zone_id": "kaltim",
@@ -301,28 +182,11 @@
         119.0,
         2.6
       ],
-      "clear_pixels": 1164,
-      "min_c": 17.68,
-      "mean_c": 27.03,
-      "max_c": 33.87,
-      "p95_c": 31.41,
-      "hotspot_pixels": 2
-    },
-    {
-      "zone_id": "kaltara",
-      "name": "Kalimantan Utara",
-      "island": "Kalimantan",
-      "bbox": [
-        114.5,
-        1.5,
-        118.0,
-        4.5
-      ],
-      "clear_pixels": 756,
-      "min_c": 17.68,
-      "mean_c": 26.51,
-      "max_c": 32.76,
-      "p95_c": 30.15,
+      "clear_pixels": 2587,
+      "min_c": 17.21,
+      "mean_c": 26.9,
+      "max_c": 34.71,
+      "p95_c": 33.16,
       "hotspot_pixels": 0
     },
     {
@@ -335,11 +199,11 @@
         116.6,
         -1.3
       ],
-      "clear_pixels": 3,
-      "min_c": 25.14,
-      "mean_c": 28.01,
-      "max_c": 31.06,
-      "p95_c": 30.74,
+      "clear_pixels": 666,
+      "min_c": 22.38,
+      "mean_c": 30.64,
+      "max_c": 34.46,
+      "p95_c": 32.81,
       "hotspot_pixels": 0
     },
     {
@@ -352,11 +216,28 @@
         125.3,
         1.8
       ],
-      "clear_pixels": 102,
-      "min_c": 17.19,
-      "mean_c": 23.7,
-      "max_c": 30.11,
-      "p95_c": 28.87,
+      "clear_pixels": 62,
+      "min_c": 16.62,
+      "mean_c": 23.69,
+      "max_c": 31.24,
+      "p95_c": 30.2,
+      "hotspot_pixels": 0
+    },
+    {
+      "zone_id": "kaltara",
+      "name": "Kalimantan Utara",
+      "island": "Kalimantan",
+      "bbox": [
+        114.5,
+        1.5,
+        118.0,
+        4.5
+      ],
+      "clear_pixels": 797,
+      "min_c": 18.56,
+      "mean_c": 25.79,
+      "max_c": 30.55,
+      "p95_c": 28.74,
       "hotspot_pixels": 0
     }
   ]

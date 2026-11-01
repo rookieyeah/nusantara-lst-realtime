@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-11-01T14:30:00+00:00",
-  "scan_start_utc": "2026-11-01T14:30:00",
-  "processed_utc": "2026-11-01T14:44:00+00:00",
-  "latency_min": 14.0,
+  "time_utc": "2026-11-01T15:00:00+00:00",
+  "scan_start_utc": "2026-11-01T15:00:00",
+  "processed_utc": "2026-11-01T15:15:46+00:00",
+  "latency_min": 15.8,
   "region": "kalimantan",
   "bbox": [
     108.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261101_1430_kalimantan.tif",
-    "png": "LST_H09_20261101_1430_kalimantan.png"
+    "cog": "LST_H09_20261101_1500_kalimantan.tif",
+    "png": "LST_H09_20261101_1500_kalimantan.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -94,37 +94,37 @@
   },
   "stats": {
     "land_pixels": 152335,
-    "clear_pixels": 50809,
-    "clear_fraction": 0.3335,
+    "clear_pixels": 51907,
+    "clear_fraction": 0.3407,
     "cloud_tests_fraction": {
-      "cold": 0.4676,
-      "split_window": 0.2227,
-      "spatial": 0.3788,
-      "cloud": 0.6497
+      "cold": 0.4741,
+      "split_window": 0.2169,
+      "spatial": 0.3836,
+      "cloud": 0.6418
     },
-    "min_c": 14.51,
-    "max_c": 33.3,
-    "mean_c": 26.07,
-    "std_c": 2.35,
-    "p05_c": 21.49,
-    "p50_c": 26.74,
-    "p95_c": 28.8,
-    "hotspot_threshold_c": 30.78,
-    "hotspot_pixels": 71
+    "min_c": 14.56,
+    "max_c": 33.12,
+    "mean_c": 25.78,
+    "std_c": 2.37,
+    "p05_c": 21.21,
+    "p50_c": 26.45,
+    "p95_c": 28.54,
+    "hotspot_threshold_c": 30.51,
+    "hotspot_pixels": 92
   },
   "sizes_mb": {
     "raw_download": 24.21,
-    "cog": 0.127,
+    "cog": 0.128,
     "png": 0.139
   },
   "timing_s": {
-    "cari_frame": 0.39,
+    "cari_frame": 0.3,
     "unduh": 0.0,
-    "baca+resample": 1.29,
-    "cloudmask": 0.03,
+    "baca+resample": 1.0,
+    "cloudmask": 0.02,
     "hitung_lst": 0.0,
-    "tulis": 0.11,
-    "total": 1.82
+    "tulis": 0.09,
+    "total": 1.41
   },
   "pipeline_version": "0.1.0"
 }

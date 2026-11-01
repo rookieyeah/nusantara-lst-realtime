@@ -1,16 +1,16 @@
 {
   "date": "2026-11-01",
   "region": "kalimantan",
-  "frames_used": 3,
+  "frames_used": 4,
   "land_pixels": 152335,
-  "clear_pixels": 19987,
-  "clear_fraction": 0.1312,
-  "coverage_fraction": 0.1312,
-  "mean_c": 26.26,
+  "clear_pixels": 20443,
+  "clear_fraction": 0.1342,
+  "coverage_fraction": 0.1342,
+  "mean_c": 26.28,
   "max_c": 37.98,
-  "min_c": 16.45,
-  "std_c": 3.34,
-  "p95_c": 30.57,
-  "hotspot_threshold_c": 32.93,
-  "hotspot_pixels": 121
+  "min_c": 15.17,
+  "std_c": 3.29,
+  "p95_c": 30.55,
+  "hotspot_threshold_c": 32.87,
+  "hotspot_pixels": 124
 }

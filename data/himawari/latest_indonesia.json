@@ -1,9 +1,9 @@
 {
   "source": "himawari9",
-  "time_utc": "2026-11-01T16:40:00+00:00",
-  "scan_start_utc": "2026-11-01T16:40:00",
-  "processed_utc": "2026-11-01T16:59:15+00:00",
-  "latency_min": 19.3,
+  "time_utc": "2026-11-01T17:10:00+00:00",
+  "scan_start_utc": "2026-11-01T17:10:00",
+  "processed_utc": "2026-11-01T17:25:10+00:00",
+  "latency_min": 15.2,
   "region": "indonesia",
   "bbox": [
     94.5,
@@ -18,8 +18,8 @@
     "crs": "EPSG:4326"
   },
   "files": {
-    "cog": "LST_H09_20261101_1640_indonesia.tif",
-    "png": "LST_H09_20261101_1640_indonesia.png"
+    "cog": "LST_H09_20261101_1710_indonesia.tif",
+    "png": "LST_H09_20261101_1710_indonesia.png"
   },
   "encoding": {
     "dtype": "int16",
@@ -95,37 +95,37 @@
   },
   "stats": {
     "land_pixels": 468010,
-    "clear_pixels": 171190,
-    "clear_fraction": 0.3658,
+    "clear_pixels": 172526,
+    "clear_fraction": 0.3686,
     "cloud_tests_fraction": {
-      "cold": 0.4585,
-      "split_window": 0.1867,
-      "spatial": 0.3197,
-      "cloud": 0.6072
+      "cold": 0.4503,
+      "split_window": 0.1825,
+      "spatial": 0.3103,
+      "cloud": 0.6008
     },
     "min_c": 14.5,
-    "max_c": 32.89,
-    "mean_c": 24.64,
-    "std_c": 2.77,
-    "p05_c": 19.14,
-    "p50_c": 25.25,
-    "p95_c": 28.12,
-    "hotspot_threshold_c": 30.18,
-    "hotspot_pixels": 1062
+    "max_c": 32.57,
+    "mean_c": 24.51,
+    "std_c": 2.75,
+    "p05_c": 18.96,
+    "p50_c": 25.12,
+    "p95_c": 27.98,
+    "hotspot_threshold_c": 30.01,
+    "hotspot_pixels": 1038
   },
   "sizes_mb": {
     "raw_download": 36.31,
-    "cog": 0.498,
-    "png": 0.499
+    "cog": 0.504,
+    "png": 0.504
   },
   "timing_s": {
-    "cari_frame": 0.14,
-    "unduh": 0.85,
-    "baca+resample": 3.74,
-    "cloudmask": 0.12,
-    "hitung_lst": 0.02,
-    "tulis": 0.55,
-    "total": 5.43
+    "cari_frame": 0.32,
+    "unduh": 1.47,
+    "baca+resample": 2.93,
+    "cloudmask": 0.14,
+    "hitung_lst": 0.03,
+    "tulis": 0.47,
+    "total": 5.37
   },
   "pipeline_version": "0.1.0"
 }

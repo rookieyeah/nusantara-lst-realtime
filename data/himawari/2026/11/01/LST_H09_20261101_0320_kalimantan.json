@@ -1,0 +1,130 @@
+{
+  "source": "himawari9",
+  "time_utc": "2026-11-01T03:20:00+00:00",
+  "scan_start_utc": "2026-11-01T03:20:00",
+  "processed_utc": "2026-11-01T03:36:50+00:00",
+  "latency_min": 16.8,
+  "region": "kalimantan",
+  "bbox": [
+    108.5,
+    -4.5,
+    119.5,
+    7.5
+  ],
+  "grid": {
+    "width": 550,
+    "height": 600,
+    "res_deg": 0.02,
+    "crs": "EPSG:4326"
+  },
+  "files": {
+    "cog": "LST_H09_20261101_0320_kalimantan.tif",
+    "png": "LST_H09_20261101_0320_kalimantan.png"
+  },
+  "encoding": {
+    "dtype": "int16",
+    "scale": 0.01,
+    "nodata": -32768,
+    "units": "degC"
+  },
+  "preview": {
+    "vmin_c": 15.0,
+    "vmax_c": 55.0,
+    "palette": {
+      "stops": [
+        0.0,
+        0.2,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
+        1.0
+      ],
+      "colors": [
+        [
+          30,
+          58,
+          138
+        ],
+        [
+          6,
+          182,
+          212
+        ],
+        [
+          34,
+          197,
+          94
+        ],
+        [
+          250,
+          204,
+          21
+        ],
+        [
+          249,
+          115,
+          22
+        ],
+        [
+          220,
+          38,
+          38
+        ],
+        [
+          127,
+          29,
+          29
+        ]
+      ]
+    }
+  },
+  "algorithm": {
+    "name": "generalized_split_window_v0",
+    "bands": [
+      "B14",
+      "B15"
+    ],
+    "segments": [
+      5,
+      6
+    ],
+    "water_vapour_gcm2": 4.5,
+    "provisional": true
+  },
+  "stats": {
+    "land_pixels": 152335,
+    "clear_pixels": 1115,
+    "clear_fraction": 0.0073,
+    "cloud_tests_fraction": {
+      "cold": 0.5919,
+      "split_window": 0.6679,
+      "spatial": 0.525,
+      "cloud": 0.9924
+    },
+    "min_c": 14.8,
+    "max_c": 36.98,
+    "mean_c": 25.8,
+    "std_c": 3.28,
+    "p05_c": 20.14,
+    "p50_c": 26.04,
+    "p95_c": 31.38,
+    "hotspot_threshold_c": 32.35,
+    "hotspot_pixels": 35
+  },
+  "sizes_mb": {
+    "raw_download": 24.21,
+    "cog": 0.015,
+    "png": 0.009
+  },
+  "timing_s": {
+    "cari_frame": 0.14,
+    "unduh": 0.0,
+    "baca+resample": 1.74,
+    "cloudmask": 0.02,
+    "hitung_lst": 0.0,
+    "tulis": 0.05,
+    "total": 1.96
+  },
+  "pipeline_version": "0.1.0"
+}

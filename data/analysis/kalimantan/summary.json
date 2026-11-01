@@ -1,39 +1,143 @@
 {
   "region": "kalimantan",
-  "latest_stamp": "20261101_0000",
+  "latest_stamp": "20261101_0100",
   "peak_day_stamp": "20261101_0000",
   "frames_in_baseline": 16,
   "anomaly": {
-    "png_url": "analysis/kalimantan/LST_ANOMALY_20261101_0000_kalimantan.png",
-    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261101_0000_kalimantan.tif",
+    "png_url": "analysis/kalimantan/LST_ANOMALY_20261101_0100_kalimantan.png",
+    "cog_url": "analysis/kalimantan/LST_ANOMALY_20261101_0100_kalimantan.tif",
     "vmin_c": -6.0,
     "vmax_c": 6.0,
-    "min_delta_c": -5.36,
-    "max_delta_c": 6.77,
-    "warm_anomaly_pixels_z2": 5,
-    "cool_anomaly_pixels_z2": 512
+    "min_delta_c": -5.0,
+    "max_delta_c": 9.58,
+    "warm_anomaly_pixels_z2": 182,
+    "cool_anomaly_pixels_z2": 10
   },
   "hotspots_latest": {
-    "regional_mean_c": 26.44,
-    "regional_std_c": 3.42,
-    "threshold_2sigma_c": 33.27,
-    "threshold_3sigma_c": 36.69,
-    "total_hotspot_pixels": 5,
-    "total_hotspot_area_km2": 24.7,
-    "cluster_count": 1,
+    "regional_mean_c": 25.06,
+    "regional_std_c": 3.5,
+    "threshold_2sigma_c": 32.06,
+    "threshold_3sigma_c": 35.56,
+    "total_hotspot_pixels": 182,
+    "total_hotspot_area_km2": 899.1,
+    "cluster_count": 9,
     "clusters": [
+      {
+        "cluster_id": 7,
+        "zone": "Pulau Sulawesi",
+        "lat": -3.33,
+        "lon": 119.03,
+        "pixels": 143,
+        "area_km2": 706.4,
+        "max_c": 37.98,
+        "mean_c": 35.22,
+        "anomaly_vs_regional_mean_c": 12.92,
+        "severity": "EKSTREM (> μ+3σ)",
+        "rank": 1
+      },
+      {
+        "cluster_id": 9,
+        "zone": "Pulau Sulawesi",
+        "lat": -3.43,
+        "lon": 119.17,
+        "pixels": 5,
+        "area_km2": 24.7,
+        "max_c": 37.96,
+        "mean_c": 37.35,
+        "anomaly_vs_regional_mean_c": 12.9,
+        "severity": "EKSTREM (> μ+3σ)",
+        "rank": 2
+      },
+      {
+        "cluster_id": 5,
+        "zone": "Pulau Sulawesi",
+        "lat": -2.57,
+        "lon": 119.13,
+        "pixels": 2,
+        "area_km2": 9.9,
+        "max_c": 33.48,
+        "mean_c": 33.39,
+        "anomaly_vs_regional_mean_c": 8.42,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 3
+      },
+      {
+        "cluster_id": 8,
+        "zone": "Pulau Sulawesi",
+        "lat": -3.15,
+        "lon": 119.05,
+        "pixels": 4,
+        "area_km2": 19.8,
+        "max_c": 33.35,
+        "mean_c": 32.56,
+        "anomaly_vs_regional_mean_c": 8.29,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 4
+      },
+      {
+        "cluster_id": 2,
+        "zone": "Pulau Sulawesi",
+        "lat": -2.51,
+        "lon": 119.11,
+        "pixels": 5,
+        "area_km2": 24.7,
+        "max_c": 33.21,
+        "mean_c": 32.85,
+        "anomaly_vs_regional_mean_c": 8.15,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 5
+      },
+      {
+        "cluster_id": 3,
+        "zone": "Pulau Sulawesi",
+        "lat": -2.49,
+        "lon": 119.35,
+        "pixels": 6,
+        "area_km2": 29.6,
+        "max_c": 33.07,
+        "mean_c": 32.64,
+        "anomaly_vs_regional_mean_c": 8.01,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 6
+      },
       {
         "cluster_id": 1,
         "zone": "Pulau Sulawesi",
-        "lat": -3.41,
-        "lon": 119.33,
+        "lat": -2.47,
+        "lon": 119.17,
+        "pixels": 3,
+        "area_km2": 14.8,
+        "max_c": 32.66,
+        "mean_c": 32.31,
+        "anomaly_vs_regional_mean_c": 7.6,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 7
+      },
+      {
+        "cluster_id": 4,
+        "zone": "Pulau Sulawesi",
+        "lat": -2.55,
+        "lon": 119.47,
+        "pixels": 3,
+        "area_km2": 14.8,
+        "max_c": 32.61,
+        "mean_c": 32.47,
+        "anomaly_vs_regional_mean_c": 7.55,
+        "severity": "SIAGA (> μ+2σ)",
+        "rank": 8
+      },
+      {
+        "cluster_id": 6,
+        "zone": "Pulau Sulawesi",
+        "lat": -2.61,
+        "lon": 118.99,
         "pixels": 2,
         "area_km2": 9.9,
-        "max_c": 34.02,
-        "mean_c": 33.72,
-        "anomaly_vs_regional_mean_c": 7.58,
+        "max_c": 32.49,
+        "mean_c": 32.48,
+        "anomaly_vs_regional_mean_c": 7.43,
         "severity": "SIAGA (> μ+2σ)",
-        "rank": 1
+        "rank": 9
       }
     ]
   },
@@ -72,12 +176,12 @@
         125.3,
         1.8
       ],
-      "clear_pixels": 1315,
-      "min_c": 16.8,
-      "mean_c": 25.95,
-      "max_c": 34.14,
-      "p95_c": 30.83,
-      "hotspot_pixels": 5
+      "clear_pixels": 823,
+      "min_c": 17.2,
+      "mean_c": 29.36,
+      "max_c": 37.98,
+      "p95_c": 36.4,
+      "hotspot_pixels": 179
     },
     {
       "zone_id": "kalbar",
@@ -89,12 +193,12 @@
         114.2,
         2.1
       ],
-      "clear_pixels": 10848,
-      "min_c": 19.36,
-      "mean_c": 27.95,
-      "max_c": 32.0,
-      "p95_c": 30.74,
-      "hotspot_pixels": 0
+      "clear_pixels": 1434,
+      "min_c": 19.83,
+      "mean_c": 26.1,
+      "max_c": 32.15,
+      "p95_c": 29.99,
+      "hotspot_pixels": 3
     },
     {
       "zone_id": "kalteng",
@@ -106,11 +210,11 @@
         115.8,
         0.8
       ],
-      "clear_pixels": 7962,
-      "min_c": 17.78,
-      "mean_c": 26.09,
-      "max_c": 31.21,
-      "p95_c": 29.86,
+      "clear_pixels": 1892,
+      "min_c": 18.21,
+      "mean_c": 25.19,
+      "max_c": 31.56,
+      "p95_c": 29.4,
       "hotspot_pixels": 0
     },
     {
@@ -123,11 +227,11 @@
         119.0,
         2.6
       ],
-      "clear_pixels": 2175,
-      "min_c": 17.66,
-      "mean_c": 22.48,
-      "max_c": 28.55,
-      "p95_c": 27.25,
+      "clear_pixels": 1776,
+      "min_c": 17.94,
+      "mean_c": 23.86,
+      "max_c": 30.84,
+      "p95_c": 27.61,
       "hotspot_pixels": 0
     },
     {
@@ -140,11 +244,11 @@
         118.0,
         4.5
       ],
-      "clear_pixels": 723,
-      "min_c": 17.07,
-      "mean_c": 20.1,
-      "max_c": 23.73,
-      "p95_c": 22.51,
+      "clear_pixels": 948,
+      "min_c": 17.19,
+      "mean_c": 22.39,
+      "max_c": 29.03,
+      "p95_c": 26.55,
       "hotspot_pixels": 0
     }
   ],

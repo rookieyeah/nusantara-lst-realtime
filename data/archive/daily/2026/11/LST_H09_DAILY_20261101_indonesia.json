@@ -1,16 +1,16 @@
 {
   "date": "2026-11-01",
   "region": "indonesia",
-  "frames_used": 18,
+  "frames_used": 19,
   "land_pixels": 468010,
-  "clear_pixels": 343595,
-  "clear_fraction": 0.7342,
-  "coverage_fraction": 0.7342,
-  "mean_c": 26.73,
+  "clear_pixels": 356088,
+  "clear_fraction": 0.7609,
+  "coverage_fraction": 0.7609,
+  "mean_c": 26.56,
   "max_c": 54.57,
   "min_c": 14.5,
-  "std_c": 3.27,
-  "p95_c": 31.28,
-  "hotspot_threshold_c": 33.27,
-  "hotspot_pixels": 3380
+  "std_c": 3.22,
+  "p95_c": 31.03,
+  "hotspot_threshold_c": 32.99,
+  "hotspot_pixels": 3344
 }
